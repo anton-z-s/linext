@@ -1,0 +1,1 @@
+# .browserlistrc is used only for css. For JS track https://github.com/facebook/create-react-app/issues/6198
