@@ -1,15 +1,16 @@
 {
+  "parser": "babel-eslint",
   "extends": ["airbnb", "plugin:prettier/recommended", "prettier/react"],
   "env": {
     "browser": true
   },
   "rules": {
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "quotes": [
       "error",
       "double",
       { "avoidEscape": true, "allowTemplateLiterals": false }
     ],
-    "sort-imports": "error",
     "sort-vars": "error",
     "sort-keys": "error"
   }

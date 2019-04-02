@@ -1,28 +1,43 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import PropTypes from "prop-types";
+import { AppBar, Toolbar, Typography, CssBaseline } from "@material-ui/core";
+import { Smartphone } from "@material-ui/icons";
+import { withStyles } from "@material-ui/core/styles";
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+const styles = theme => ({
+  appBar: {
+    position: "relative"
+  },
+  icon: {
+    marginRight: theme.spacing.unit * 2
   }
+});
+
+function App(props) {
+  const { classes } = props;
+
+  return (
+    <React.Fragment>
+      <CssBaseline />
+      <AppBar position="static" className={classes.appBar}>
+        <Toolbar>
+          <Smartphone className={classes.icon} />
+          <Typography variant="h6" color="inherit" noWrap>
+            Linext
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <main>
+        <Typography variant="h3" gutterBottom>
+          ...
+        </Typography>
+      </main>
+    </React.Fragment>
+  );
 }
 
-export default App;
+App.propTypes = {
+  classes: PropTypes.object.isRequired
+};
+
+export default withStyles(styles)(App);
