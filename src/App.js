@@ -1,8 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { AppBar, Toolbar, Typography, CssBaseline } from "@material-ui/core";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  CssBaseline,
+  withStyles
+} from "@material-ui/core";
 import { Smartphone } from "@material-ui/icons";
-import { withStyles } from "@material-ui/core/styles";
 
 const styles = theme => ({
   appBar: {
@@ -10,6 +15,16 @@ const styles = theme => ({
   },
   icon: {
     marginRight: theme.spacing.unit * 2
+  },
+  container: {
+    width: "auto",
+    marginLeft: theme.spacing.unit * 3,
+    marginRight: theme.spacing.unit * 3,
+    [theme.breakpoints.up(1100 + theme.spacing.unit * 3 * 2)]: {
+      width: 1100,
+      marginLeft: "auto",
+      marginRight: "auto"
+    }
   }
 });
 
@@ -27,7 +42,7 @@ function App(props) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <main>
+      <main className={classes.container}>
         <Typography variant="h3" gutterBottom>
           ...
         </Typography>
