@@ -8,6 +8,7 @@ import {
   withStyles
 } from "@material-ui/core";
 import { Smartphone } from "@material-ui/icons";
+import DevicesTable from "./components/DevicesTable";
 
 const styles = theme => ({
   appBar: {
@@ -46,6 +47,7 @@ function App(props) {
         <Typography variant="h3" gutterBottom>
           ...
         </Typography>
+        <DevicesTable />
       </main>
     </React.Fragment>
   );
