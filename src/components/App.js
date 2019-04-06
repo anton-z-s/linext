@@ -8,7 +8,7 @@ import {
   withStyles
 } from "@material-ui/core";
 import { Smartphone } from "@material-ui/icons";
-import DevicesTable from "./components/DevicesTable";
+import DevicesTable from "./DevicesTable";
 
 const styles = theme => ({
   appBar: {

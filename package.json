@@ -5,8 +5,12 @@
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
+    "apollo-boost": "^0.3.1",
+    "graphql": "^14.2.1",
+    "graphql-tag": "^2.10.1",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
+    "react-apollo": "^2.5.4",
     "react-dom": "^16.8.4",
     "react-scripts": "2.1.8",
     "typeface-roboto": "0.0.54"

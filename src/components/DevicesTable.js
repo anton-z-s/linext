@@ -9,6 +9,8 @@ import {
   TableRow,
   Paper
 } from "@material-ui/core";
+import { graphql } from "react-apollo";
+import GET_DEVICES from "../queries/devicesWiki";
 
 const styles = theme => ({
   root: {
@@ -31,6 +33,8 @@ const rows = [createData("Frozen yoghurt", 159, 6.0, 24, 4.0)];
 
 function DevicesTable(props) {
   const { classes } = props;
+
+  console.log(props);
 
   return (
     <Paper className={classes.root}>
@@ -78,4 +82,5 @@ DevicesTable.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(DevicesTable);
+// export default graphql(GET_DEVICES)(DevicesTable);
+export default withStyles(styles)(graphql(GET_DEVICES)(DevicesTable));
