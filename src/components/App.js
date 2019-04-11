@@ -30,7 +30,7 @@ const styles = theme => ({
 });
 
 function App(props) {
-  const { classes } = props;
+  const { classes, client } = props;
 
   return (
     <React.Fragment>
@@ -47,14 +47,15 @@ function App(props) {
         <Typography variant="h3" gutterBottom>
           ...
         </Typography>
-        <DevicesTable />
+        <DevicesTable client={client} />
       </main>
     </React.Fragment>
   );
 }
 
 App.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  client: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(App);

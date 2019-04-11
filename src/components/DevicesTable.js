@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -9,8 +9,38 @@ import {
   TableRow,
   Paper
 } from "@material-ui/core";
-import { graphql } from "react-apollo";
+import { safeLoad } from "js-yaml";
 import GET_DEVICES from "../queries/devicesWiki";
+
+/**
+ * Get object's value by key/array of keys
+ * @param {Object|Array} nestedObj
+ * @param {Array} pathArr
+ */
+const getNestedObject = (nestedObj, pathArr) =>
+  nestedObj instanceof Array
+    ? nestedObj.map(obj => pathArr.reduce((a, v) => a[v], obj)).join("; ")
+    : pathArr.reduce((a, v) => a[v], nestedObj);
+
+const COL_LIST = [
+  "vendor",
+  "name",
+  "codename",
+  ["cameras", "info"],
+  "screen",
+  "screen_res",
+  "storage",
+  ["battery", "capacity"],
+  "cpu",
+  "gpu",
+  "ram",
+  "wifi",
+  ["bluetooth", "spec"],
+  "width",
+  "height",
+  "depth",
+  "release"
+];
 
 const styles = theme => ({
   root: {
@@ -23,64 +53,72 @@ const styles = theme => ({
   }
 });
 
-let id = 0;
-function createData(name, calories, fat, carbs, protein) {
-  id += 1;
-  return { id, name, calories, fat, carbs, protein };
-}
+class DevicesTable extends Component {
+  state = { rows: null };
 
-const rows = [createData("Frozen yoghurt", 159, 6.0, 24, 4.0)];
+  componentDidMount() {
+    const { client } = this.props;
+    client
+      .query({
+        query: GET_DEVICES
+      })
+      .then(result =>
+        this.setState({
+          rows: result.data.repository.object.entries.map(entry =>
+            safeLoad(entry.object.text)
+          )
+        })
+      );
+  }
 
-function DevicesTable(props) {
-  const { classes } = props;
-
-  console.log(props);
-
-  return (
-    <Paper className={classes.root}>
-      <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell>vendor</TableCell>
-            <TableCell>name</TableCell>
-            <TableCell align="right">codename</TableCell>
-            <TableCell align="right">battery capacity</TableCell>
-            <TableCell align="right">cameras</TableCell>
-            <TableCell align="right">screen</TableCell>
-            <TableCell align="right">screen_res</TableCell>
-            <TableCell align="right">storage</TableCell>
-            <TableCell align="right">cpu</TableCell>
-            <TableCell align="right">gpu</TableCell>
-            <TableCell align="right">ram</TableCell>
-            <TableCell align="right">wifi</TableCell>
-            <TableCell align="right">bluetooth spec</TableCell>
-            <TableCell align="right">width</TableCell>
-            <TableCell align="right">height</TableCell>
-            <TableCell align="right">depth</TableCell>
-            <TableCell align="right">release</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map(row => (
-            <TableRow key={row.id}>
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
-            </TableRow>
+  displayDevices() {
+    const { rows } = this.state;
+    if (!rows) {
+      return (
+        <TableRow>
+          {COL_LIST.map(() => (
+            <TableCell align="right">loading</TableCell>
           ))}
-        </TableBody>
-      </Table>
-    </Paper>
-  );
+        </TableRow>
+      );
+    }
+    return rows.map(row => (
+      <TableRow>
+        {COL_LIST.map(col => (
+          <TableCell>
+            {String(
+              col instanceof Array
+                ? getNestedObject(row[col[0]], col.slice(1))
+                : row[col]
+            )}
+          </TableCell>
+        ))}
+      </TableRow>
+    ));
+  }
+
+  render() {
+    const { classes } = this.props;
+    return (
+      <Paper className={classes.root}>
+        <Table className={classes.table}>
+          <TableHead>
+            <TableRow>
+              {COL_LIST.map(col => (
+                <TableCell align="right">{col}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>{this.displayDevices()}</TableBody>
+        </Table>
+      </Paper>
+    );
+  }
 }
 
 DevicesTable.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  client: PropTypes.object.isRequired
 };
 
-// export default graphql(GET_DEVICES)(DevicesTable);
-export default withStyles(styles)(graphql(GET_DEVICES)(DevicesTable));
+export default withStyles(styles)(DevicesTable);

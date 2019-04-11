@@ -8,6 +8,7 @@
     "apollo-boost": "^0.3.1",
     "graphql": "^14.2.1",
     "graphql-tag": "^2.10.1",
+    "js-yaml": "^3.13.1",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-apollo": "^2.5.4",
