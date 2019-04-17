@@ -5,7 +5,7 @@ import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "react-apollo";
 import App from "./components/App";
 
-const client = new ApolloClient({
+const apolloClient = new ApolloClient({
   uri: "https://api.github.com/graphql",
   headers: {
     // public access only, nothing leaked here
@@ -22,4 +22,7 @@ const client = new ApolloClient({
   // }
 });
 
-ReactDOM.render(<App client={client} />, document.getElementById("root"));
+ReactDOM.render(
+  <App apolloClient={apolloClient} />,
+  document.getElementById("root")
+);

@@ -30,7 +30,7 @@ const styles = theme => ({
 });
 
 function App(props) {
-  const { classes, client } = props;
+  const { classes, apolloClient } = props;
 
   return (
     <React.Fragment>
@@ -47,7 +47,7 @@ function App(props) {
         <Typography variant="h3" gutterBottom>
           ...
         </Typography>
-        <DevicesTable client={client} />
+        <DevicesTable apolloClient={apolloClient} />
       </main>
     </React.Fragment>
   );
@@ -55,7 +55,7 @@ function App(props) {
 
 App.propTypes = {
   classes: PropTypes.object.isRequired,
-  client: PropTypes.object.isRequired
+  apolloClient: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(App);
