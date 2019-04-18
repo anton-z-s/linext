@@ -13,16 +13,6 @@ import { safeLoad } from "js-yaml";
 import GET_DEVICES from "../queries/devicesWiki";
 import SortingTableHead from "./SortingTableHead";
 
-/**
- * Get object's value by key/array of keys
- * @param {Object|Array} nestedObj
- * @param {Array} pathArr
- */
-const getNestedObject = (nestedObj, pathArr) =>
-  nestedObj instanceof Array
-    ? nestedObj.map(obj => pathArr.reduce((a, v) => a[v], obj)).join("; ")
-    : pathArr.reduce((a, v) => a[v], nestedObj);
-
 // prettier-ignore
 const COL_LIST = [
   { id: "codename", numeric: false, path: "codename", label: "codename" },
@@ -32,7 +22,7 @@ const COL_LIST = [
   { id: "screen", numeric: false, path: "screen", label: "screen" },
   { id: "screen_res", numeric: false, path: "screen_res", label: "screen_res" },
   { id: "storage", numeric: false, path: "storage", label: "storage" },
-  { id: "battery", numeric: true, path: ["battery", "capacity"], label: "battery" },
+  { id: "battery", numeric: false, path: ["battery", "capacity"], label: "battery" },
   { id: "cpu", numeric: false, path: "cpu", label: "cpu" },
   { id: "gpu", numeric: false, path: "gpu", label: "gpu" },
   { id: "ram", numeric: false, path: "ram", label: "ram" },
@@ -44,14 +34,35 @@ const COL_LIST = [
   { id: "release", numeric: false, path: "release", label: "release" }
 ];
 
+/**
+ * Get object's value by key/array of keys
+ * @param {Object|Array} nestedObj
+ * @param {Array} pathArr
+ */
+const getNestedObject = (nestedObj, pathArr) => {
+  if (nestedObj instanceof Array) {
+    return nestedObj
+      .map(obj =>
+        pathArr.reduce(
+          (a, v) => (a[v] !== undefined ? a[v] : a[Object.keys(a)[0]][v]),
+          obj
+        )
+      )
+      .join("; ");
+  }
+  const res = pathArr.reduce((a, v) => a[v], nestedObj);
+  return res !== undefined ? res : "—";
+};
+
 const obect2Array = rows => {
   // TODO speed up by switching to associated array http://jsben.ch/Y9jDP http://jsben.ch/W7Yi3
   return rows.map(row =>
-    COL_LIST.map(({ path }) =>
-      path instanceof Array
-        ? getNestedObject(row[path[0]], path.slice(1))
-        : row[path]
-    )
+    COL_LIST.map(({ path }) => {
+      if (path instanceof Array) {
+        return getNestedObject(row[path[0]], path.slice(1));
+      }
+      return row[path] !== undefined ? row[path] : "—";
+    })
   );
 };
 
