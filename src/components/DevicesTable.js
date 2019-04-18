@@ -25,14 +25,14 @@ const getNestedObject = (nestedObj, pathArr) =>
 
 // prettier-ignore
 const COL_LIST = [
+  { id: "codename", numeric: false, path: "codename", label: "codename" },
   { id: "vendor", numeric: false, path: "vendor", label: "vendor" },
   { id: "name", numeric: false, path: "name", label: "name" },
-  { id: "codename", numeric: false, path: "codename", label: "codename" },
   { id: "cameras", numeric: false, path: ["cameras", "info"], label: "cameras"  },
   { id: "screen", numeric: false, path: "screen", label: "screen" },
   { id: "screen_res", numeric: false, path: "screen_res", label: "screen_res" },
   { id: "storage", numeric: false, path: "storage", label: "storage" },
-  { id: "battery", numeric: false, path: ["battery", "capacity"], label: "battery" },
+  { id: "battery", numeric: true, path: ["battery", "capacity"], label: "battery" },
   { id: "cpu", numeric: false, path: "cpu", label: "cpu" },
   { id: "gpu", numeric: false, path: "gpu", label: "gpu" },
   { id: "ram", numeric: false, path: "ram", label: "ram" },
@@ -43,6 +43,17 @@ const COL_LIST = [
   { id: "depth", numeric: false, path: "depth", label: "depth" },
   { id: "release", numeric: false, path: "release", label: "release" }
 ];
+
+const obect2Array = rows => {
+  // TODO speed up by switching to associated array http://jsben.ch/Y9jDP http://jsben.ch/W7Yi3
+  return rows.map(row =>
+    COL_LIST.map(({ path }) =>
+      path instanceof Array
+        ? getNestedObject(row[path[0]], path.slice(1))
+        : row[path]
+    )
+  );
+};
 
 const styles = theme => ({
   root: {
@@ -70,8 +81,10 @@ class DevicesTable extends Component {
       })
       .then(result =>
         this.setState({
-          rows: result.data.repository.object.entries.map(entry =>
-            safeLoad(entry.object.text)
+          rows: obect2Array(
+            result.data.repository.object.entries.map(entry =>
+              safeLoad(entry.object.text)
+            )
           )
         })
       );
@@ -88,34 +101,17 @@ class DevicesTable extends Component {
     this.setState({ order, orderBy });
   };
 
-  desc = (a, b, orderBy) => {
-    if (b[orderBy] < a[orderBy]) {
-      return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-      return 1;
-    }
-    return 0;
-  };
-
-  stableSort = (array, cmp) => {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-      const order = cmp(a[0], b[0]);
-      if (order !== 0) return order;
-      return a[1] - b[1];
+  getSorted = (arr, orderByNum, order) => {
+    return arr.sort((a, b) => {
+      const orderDirection = order === "asc" ? 1 : -1;
+      return (
+        orderDirection * String(a[orderByNum]).localeCompare(b[orderByNum])
+      );
     });
-    return stabilizedThis.map(el => el[0]);
-  };
-
-  getSorting = (order, orderBy) => {
-    return order === "desc"
-      ? (a, b) => this.desc(a, b, orderBy)
-      : (a, b) => -this.desc(a, b, orderBy);
   };
 
   displayDevices() {
-    const { rows } = this.state;
+    const { rows, orderBy, order } = this.state;
     if (!rows) {
       return (
         <TableRow>
@@ -128,21 +124,17 @@ class DevicesTable extends Component {
       );
     }
 
-    return this.stableSort(rows, this.getSorting(this.order, this.orderBy)).map(
-      row => (
-        <TableRow key={row.codename}>
-          {COL_LIST.map(({ id, path }) => (
-            <TableCell key={id}>
-              {String(
-                path instanceof Array
-                  ? getNestedObject(row[path[0]], path.slice(1))
-                  : row[path]
-              )}
-            </TableCell>
-          ))}
-        </TableRow>
-      )
-    );
+    return this.getSorted(
+      rows,
+      COL_LIST.findIndex(c => c.id === orderBy),
+      order
+    ).map(row => (
+      <TableRow key={row[0]}>
+        {row.map((cell, index) => (
+          <TableCell key={COL_LIST[index].id}>{String(cell)}</TableCell>
+        ))}
+      </TableRow>
+    ));
   }
 
   render() {
