@@ -9,7 +9,7 @@ import {
   TableRow,
   Paper
 } from "@material-ui/core";
-import { safeLoad } from "js-yaml";
+import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
 import ReactTable from "react-table";
 import GET_DEVICES from "../queries/devicesWiki";
 
@@ -24,18 +24,20 @@ const getNestedObject = (wholeObj, fullPath) => {
   const nestedObj = wholeObj[fullPath[0]];
   const nestedPath = fullPath.slice(1);
   if (nestedObj instanceof Array) {
+    if (nestedPath.length === 0) {
+      return nestedObj.map(obj => Object.values(obj)).join("; ");
+    }
     return nestedObj
       .map(obj =>
         nestedPath.reduce(
-          (a, v) => (a[v] !== undefined ? a[v] : a[Object.keys(a)[0]][v]),
+          (a, v) => (a[v] !== undefined ? a[v] : Object.values(a)[0][v]),
           obj
         )
       )
       .join("; ");
   }
 
-  const res = nestedPath.reduce((a, v) => a[v], nestedObj);
-  return res !== undefined ? res : "—";
+  return nestedPath.reduce((a, v) => a[v], nestedObj);
 };
 
 const columns = [
@@ -136,8 +138,8 @@ class DevicesTable extends Component {
       })
       .then(result =>
         this.setState({
-          data: result.data.repository.object.entries.map(entry =>
-            safeLoad(entry.object.text)
+          data: result.data.repository.object.entries.map(
+            entry => safeLoad(entry.object.text, { schema: FAILSAFE_SCHEMA }) // FAILSAFE_SCHEMA will ensure that strings that look like dates won't be converted
           )
         })
       );
