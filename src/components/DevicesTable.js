@@ -23,14 +23,20 @@ import "react-table/react-table.css";
 const getNestedObject = (wholeObj, fullPath) => {
   const nestedObj = wholeObj[fullPath[0]];
   const nestedPath = fullPath.slice(1);
+
   if (nestedObj instanceof Array) {
     if (nestedPath.length === 0) {
-      return nestedObj.map(obj => Object.values(obj)).join("; ");
+      return nestedObj
+        .map(obj => `${Object.keys(obj)[0]}: ${Object.values(obj)[0]}`)
+        .join("; ");
     }
     return nestedObj
       .map(obj =>
         nestedPath.reduce(
-          (a, v) => (a[v] !== undefined ? a[v] : Object.values(a)[0][v]),
+          (a, v) =>
+            a[v] !== undefined
+              ? a[v]
+              : `${Object.keys(a)[0]}: ${Object.values(a)[0][v]}`,
           obj
         )
       )
@@ -74,7 +80,7 @@ const columns = [
     id: "battery",
     Header: "Battery",
     accessor: v => getNestedObject(v, ["battery", "capacity"])
-  },
+  }
   {
     Header: "CPU",
     accessor: "cpu"
