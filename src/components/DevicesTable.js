@@ -80,7 +80,7 @@ const columns = [
     id: "battery",
     Header: "Battery",
     accessor: v => getNestedObject(v, ["battery", "capacity"])
-  }
+  },
   {
     Header: "CPU",
     accessor: "cpu"
@@ -156,7 +156,20 @@ class DevicesTable extends Component {
     const { data } = this.state;
     return (
       <Paper className={classes.root}>
-        <ReactTable data={data} columns={columns} />
+        <ReactTable
+          data={data}
+          columns={columns}
+          noDataText="Loading data..."
+          showPagination={false}
+          defaultPageSize={-1}
+          minRows={5}
+          defaultSorted={[
+            {
+              id: "release",
+              desc: true
+            }
+          ]}
+        />
       </Paper>
     );
   }
