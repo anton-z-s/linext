@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableHead,
+//   TableRow,
   Paper
 } from "@material-ui/core";
+import { TableCell } from "@material-ui/core";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
 import ReactTable from "react-table";
 import GET_DEVICES from "../queries/devicesWiki";
@@ -127,6 +128,8 @@ const styles = theme => ({
     overflowX: "auto"
   },
   table: {
+    // add theme from other component https://stackoverflow.com/a/52928440
+    ...theme.table.table.Table
     minWidth: 700
   }
 });
@@ -149,6 +152,8 @@ class DevicesTable extends Component {
           )
         })
       );
+      console.log(TableCell);
+      
   }
 
   render() {
@@ -157,6 +162,8 @@ class DevicesTable extends Component {
     return (
       <Paper className={classes.root}>
         <ReactTable
+          // className="MuiTable"
+          // className={Table.defaultProps.className}
           data={data}
           columns={columns}
           noDataText="Loading data..."
@@ -169,6 +176,9 @@ class DevicesTable extends Component {
               desc: true
             }
           ]}
+          // style={{
+          //   ref: Table
+          // }}
         />
       </Paper>
     );
@@ -180,4 +190,7 @@ DevicesTable.propTypes = {
   apolloClient: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(DevicesTable);
+// export default withStyles(styles)(DevicesTable);
+export default withStyles(styles, {
+  name: "MuiTable"
+})(DevicesTable);
