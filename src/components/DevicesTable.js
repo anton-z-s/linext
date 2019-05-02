@@ -160,6 +160,7 @@ class DevicesTable extends Component {
     const { classes } = this.props;
     const { data } = this.state;
     return (
+      // Add class to nested component https://stackoverflow.com/a/47763027
       <Paper className={classes.root}>
         <ReactTable
           // className="MuiTable"
