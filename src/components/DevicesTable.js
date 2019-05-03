@@ -10,7 +10,7 @@ import {
   Paper
 } from "@material-ui/core";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
-import ReactTable from "react-table";
+import ReactTable, { ReactTableDefaults } from "react-table";
 import GET_DEVICES from "../queries/devicesWiki";
 
 import "react-table/react-table.css";
@@ -28,7 +28,7 @@ const getNestedObject = (wholeObj, fullPath) => {
     if (nestedPath.length === 0) {
       return nestedObj
         .map(obj => `${Object.keys(obj)[0]}: ${Object.values(obj)[0]}`)
-        .join("; ");
+        .join("\u000A");
     }
     return nestedObj
       .map(obj =>
@@ -40,7 +40,7 @@ const getNestedObject = (wholeObj, fullPath) => {
           obj
         )
       )
-      .join("; ");
+      .join("\u000A");
   }
 
   return nestedPath.reduce((a, v) => a[v], nestedObj);
@@ -159,6 +159,10 @@ class DevicesTable extends Component {
         <ReactTable
           data={data}
           columns={columns}
+          column={{
+            ...ReactTableDefaults.column,
+            style: { whiteSpace: "normal" }
+          }}
           noDataText="Loading data..."
           showPagination={false}
           defaultPageSize={-1}
