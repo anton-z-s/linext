@@ -114,6 +114,12 @@ const columns = [
     accessor: "depth"
   },
   {
+    id: "maintainers",
+    Header: "Maintained",
+    accessor: v =>
+      Array.isArray(v.maintainers) && v.maintainers.length ? "Yes" : "No"
+  },
+  {
     id: "release",
     Header: "Release date",
     accessor: v => getNestedObject(v, ["release"])
@@ -145,7 +151,7 @@ class DevicesTable extends Component {
       .then(result =>
         this.setState({
           data: result.data.repository.object.entries.map(
-            entry => safeLoad(entry.object.text, { schema: FAILSAFE_SCHEMA }) // FAILSAFE_SCHEMA will ensure that strings that look like dates won't be converted
+            entry => safeLoad(entry.object.text, { schema: FAILSAFE_SCHEMA }) // FAILSAFE_SCHEMA will ensure that strings that look like date won't be converted
           )
         })
       );
