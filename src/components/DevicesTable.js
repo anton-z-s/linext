@@ -179,6 +179,13 @@ class DevicesTable extends Component {
               desc: true
             }
           ]}
+          filtered={[
+            {
+              // default filter value
+              id: "maintainers",
+              value: "Yes"
+            }
+          ]}
         />
       </Paper>
     );
