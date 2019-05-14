@@ -7,8 +7,19 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Paper
+  Paper,
+  Tooltip,
+  IconButton,
+  Popover,
+  Typography,
+  FormControl,
+  FormLabel,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  FormHelperText
 } from "@material-ui/core";
+import FilterListIcon from "@material-ui/icons/FilterList";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
 import ReactTable, { ReactTableDefaults } from "react-table";
 import GET_DEVICES from "../queries/devicesWiki";
@@ -134,12 +145,16 @@ const styles = theme => ({
   },
   table: {
     minWidth: 700
+  },
+  formControl: {
+    margin: theme.spacing.unit * 3
   }
 });
 
 class DevicesTable extends Component {
   state = {
-    data: []
+    data: [],
+    anchorCol: null
   };
 
   componentDidMount() {
@@ -157,11 +172,62 @@ class DevicesTable extends Component {
       );
   }
 
+  handleColumnToggleClick = event => {
+    this.setState({
+      anchorCol: event.currentTarget
+    });
+  };
+
+  handleColumnToggleClose = () => {
+    this.setState({
+      anchorCol: null
+    });
+  };
+
   render() {
     const { classes } = this.props;
-    const { data } = this.state;
+    const { data, anchorCol } = this.state;
+    const isColumnToggle = Boolean(anchorCol);
+
     return (
       <Paper className={classes.root}>
+        <Tooltip title="Toggle columns">
+          <IconButton onClick={this.handleColumnToggleClick}>
+            <FilterListIcon />
+          </IconButton>
+        </Tooltip>
+        <Popover
+          id="simple-popper"
+          open={isColumnToggle}
+          anchorEl={anchorCol}
+          onClose={this.handleColumnToggleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center"
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center"
+          }}
+        >
+          <FormControl className={classes.formControl}>
+            <FormLabel>Select visible columns</FormLabel>
+            <FormGroup>
+              <FormControlLabel
+                control={<Checkbox value="111" />}
+                label="111"
+              />
+              <FormControlLabel
+                control={<Checkbox value="222" />}
+                label="222"
+              />
+              <FormControlLabel
+                control={<Checkbox value="333" />}
+                label="333"
+              />
+            </FormGroup>
+          </FormControl>
+        </Popover>
         <ReactTable
           data={data}
           columns={columns}
