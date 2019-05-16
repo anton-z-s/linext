@@ -12,7 +12,8 @@ import DevicesTable from "./DevicesTable";
 
 const styles = theme => ({
   appBar: {
-    position: "relative"
+    position: "relative",
+    backgroundColor: "#167C80"
   },
   icon: {
     marginRight: theme.spacing.unit * 2
