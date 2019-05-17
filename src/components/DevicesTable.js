@@ -275,6 +275,14 @@ class DevicesTable extends Component {
               value: "Yes"
             }
           ]}
+          defaultFilterMethod={(filter, row) => {
+            const id = filter.pivotId || filter.id;
+            return row[id] !== undefined
+              ? String(row[id])
+                  .toLowerCase()
+                  .includes(filter.value.toLowerCase())
+              : true;
+          }}
         />
       </Paper>
     );
