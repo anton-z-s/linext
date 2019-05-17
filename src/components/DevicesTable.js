@@ -199,7 +199,7 @@ class DevicesTable extends Component {
         id: "maintainers",
         Header: "Maintainers",
         accessor: v => array2String(v, ["maintainers"]),
-        show: true
+        show: false
       },
       {
         Header: "Network",
@@ -210,7 +210,7 @@ class DevicesTable extends Component {
         id: "peripherals",
         Header: "Peripherals",
         accessor: v => array2String(v, ["peripherals"]),
-        show: true
+        show: false
       },
       {
         Header: "Screen ppi",
@@ -345,6 +345,7 @@ class DevicesTable extends Component {
             }
           ]}
           filterable
+          filtered={[]} // Dirty hack to make react-table listen to the changes of the state (in handleCToggle). Problem with v6, will be fixed in v7 https://github.com/tannerlinsley/react-table/issues/955#issuecomment-441724937
           defaultFiltered={[
             {
               // default filter value
