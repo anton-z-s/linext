@@ -35,7 +35,7 @@ const getNestedObject = (wholeObj, fullPath) => {
   const nestedObj = wholeObj[fullPath[0]];
   const nestedPath = fullPath.slice(1);
 
-  if (nestedObj instanceof Array) {
+  if (Array.isArray(nestedObj)) {
     if (nestedPath.length === 0) {
       return nestedObj
         .map(obj => `${Object.keys(obj)[0]}: ${Object.values(obj)[0]}`)
@@ -56,6 +56,9 @@ const getNestedObject = (wholeObj, fullPath) => {
 
   return nestedPath.reduce((a, v) => a[v], nestedObj);
 };
+
+const array2String = (wholeObj, fullPath) =>
+  Array.isArray(wholeObj[fullPath]) ? wholeObj[fullPath].join(", ") : "";
 
 const styles = theme => ({
   root: {
@@ -160,7 +163,7 @@ class DevicesTable extends Component {
         show: false
       },
       {
-        id: "maintainers",
+        id: "maintained",
         Header: "Maintained",
         accessor: v =>
           Array.isArray(v.maintainers) && v.maintainers.length ? "Yes" : "No",
@@ -171,6 +174,80 @@ class DevicesTable extends Component {
         Header: "Release date",
         accessor: v => getNestedObject(v, ["release"]),
         show: true
+      },
+      {
+        Header: "Architecture",
+        accessor: "architecture",
+        show: false
+      },
+      {
+        Header: "CPU cores",
+        accessor: "cpu_cores",
+        show: false
+      },
+      {
+        Header: "CPU frequency",
+        accessor: "cpu_freq",
+        show: false
+      },
+      {
+        Header: "Current version",
+        accessor: "current_branch",
+        show: false
+      },
+      {
+        id: "maintainers",
+        Header: "Maintainers",
+        accessor: v => array2String(v, ["maintainers"]),
+        show: true
+      },
+      {
+        Header: "Network",
+        accessor: "network",
+        show: false
+      },
+      {
+        id: "peripherals",
+        Header: "Peripherals",
+        accessor: v => array2String(v, ["peripherals"]),
+        show: true
+      },
+      {
+        Header: "Screen ppi",
+        accessor: "screen_ppi",
+        show: false
+      },
+      {
+        Header: "Screen technology",
+        accessor: "screen_tech",
+        show: false
+      },
+      {
+        Header: "SD Card",
+        accessor: "sdcard",
+        show: false
+      },
+      {
+        Header: "System on a chip",
+        accessor: "soc",
+        show: false
+      },
+      {
+        Header: "Device type",
+        accessor: "type",
+        show: false
+      },
+      {
+        id: "versions",
+        Header: "Available versions",
+        accessor: v => array2String(v, ["versions"]),
+        show: false
+      },
+      {
+        id: "models",
+        Header: "Models",
+        accessor: v => array2String(v, ["models"]),
+        show: false
       }
     ]
   };
@@ -271,7 +348,7 @@ class DevicesTable extends Component {
           defaultFiltered={[
             {
               // default filter value
-              id: "maintainers",
+              id: "maintained",
               value: "Yes"
             }
           ]}
