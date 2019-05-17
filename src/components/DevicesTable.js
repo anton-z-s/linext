@@ -267,7 +267,8 @@ class DevicesTable extends Component {
               desc: true
             }
           ]}
-          filtered={[
+          filterable
+          defaultFiltered={[
             {
               // default filter value
               id: "maintainers",
