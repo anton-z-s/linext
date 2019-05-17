@@ -283,7 +283,10 @@ class DevicesTable extends Component {
     const { columns } = this.state;
     columns[columns.findIndex(x => x.Header === event.target.value)].show =
       event.target.checked;
-    this.setState({ columns });
+    this.setState({ columns: columns.slice() }); // without making a shallow copy change doesn't get registered
+    // TODO reconsider when react-table v7 is out
+    // related https://github.com/tannerlinsley/react-table/issues/294#issuecomment-311457211
+
     //  TODO consider keeping in state only data that actually change ("show" property)
   };
 
@@ -345,7 +348,6 @@ class DevicesTable extends Component {
             }
           ]}
           filterable
-          filtered={[]} // Dirty hack to make react-table listen to the changes of the state (in handleCToggle). Problem with v6, will be fixed in v7 https://github.com/tannerlinsley/react-table/issues/955#issuecomment-441724937
           defaultFiltered={[
             {
               // default filter value
