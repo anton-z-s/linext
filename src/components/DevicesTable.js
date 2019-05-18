@@ -96,6 +96,7 @@ class DevicesTable extends Component {
   state = {
     data: [],
     anchorCol: null,
+    loading: true,
     // Header must be unique
     columns: [
       {
@@ -279,11 +280,16 @@ class DevicesTable extends Component {
         query: GET_DEVICES
       })
       .then(result =>
-        this.setState({
-          data: result.data.repository.object.entries.map(entry =>
-            safeLoad(entry.object.text, { schema: FAILSAFE_SCHEMA })
-          )
-        })
+        this.setState(
+          {
+            data: result.data.repository.object.entries.map(entry =>
+              safeLoad(entry.object.text, { schema: FAILSAFE_SCHEMA })
+            )
+          },
+          () => {
+            this.setState({ loading: false });
+          }
+        )
       ); // FAILSAFE_SCHEMA will ensure that strings that look like date won't be converted
   }
 
@@ -313,7 +319,7 @@ class DevicesTable extends Component {
 
   render() {
     const { classes } = this.props;
-    const { data, anchorCol, columns } = this.state;
+    const { data, anchorCol, columns, loading } = this.state;
     const isColumnToggle = Boolean(anchorCol);
 
     return (
@@ -358,7 +364,8 @@ class DevicesTable extends Component {
             ...ReactTableDefaults.column,
             style: { whiteSpace: "normal" }
           }}
-          noDataText="Loading data..."
+          noDataText={loading ? "" : "No devices found..."}
+          loading={loading}
           showPagination={false}
           defaultPageSize={-1}
           minRows={5}
