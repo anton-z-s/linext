@@ -100,6 +100,12 @@ class DevicesTable extends Component {
         show: true
       },
       {
+        id: "models",
+        Header: "Models",
+        accessor: v => array2String(v, ["models"]),
+        show: false
+      },
+      {
         id: "cameras",
         Header: "Сameras",
         accessor: v => getNestedObject(v, ["cameras", "info"]),
@@ -116,8 +122,23 @@ class DevicesTable extends Component {
         show: true
       },
       {
+        Header: "Screen ppi",
+        accessor: "screen_ppi",
+        show: false
+      },
+      {
+        Header: "Screen technology",
+        accessor: "screen_tech",
+        show: false
+      },
+      {
         Header: "Storage",
         accessor: "storage",
+        show: false
+      },
+      {
+        Header: "SD Card",
+        accessor: "sdcard",
         show: false
       },
       {
@@ -127,8 +148,29 @@ class DevicesTable extends Component {
         show: false
       },
       {
+        id: "architecture",
+        Header: "Architecture",
+        accessor: v => getNestedObject(v, ["architecture", "cpu"]),
+        show: false
+      },
+      {
+        Header: "System on a chip",
+        accessor: "soc",
+        show: false
+      },
+      {
         Header: "CPU",
         accessor: "cpu",
+        show: false
+      },
+      {
+        Header: "CPU cores",
+        accessor: "cpu_cores",
+        show: false
+      },
+      {
+        Header: "CPU frequency",
+        accessor: "cpu_freq",
         show: false
       },
       {
@@ -149,6 +191,12 @@ class DevicesTable extends Component {
       {
         Header: "Wi-Fi",
         accessor: "wifi",
+        show: false
+      },
+      {
+        id: "network",
+        Header: "Network",
+        accessor: v => getNestedObject(v, ["network", "tech"]),
         show: false
       },
       {
@@ -174,73 +222,14 @@ class DevicesTable extends Component {
         show: false
       },
       {
-        id: "release",
-        Header: "Release date",
-        accessor: v => getNestedObject(v, ["release"]),
-        show: true
-      },
-      {
-        id: "architecture",
-        Header: "Architecture",
-        accessor: v => getNestedObject(v, ["architecture", "cpu"]),
-        show: false
-      },
-      {
-        Header: "CPU cores",
-        accessor: "cpu_cores",
-        show: false
-      },
-      {
-        Header: "CPU frequency",
-        accessor: "cpu_freq",
-        show: false
-      },
-      {
-        Header: "Current version",
-        accessor: "current_branch",
-        show: false
-      },
-      {
         id: "maintainers",
         Header: "Maintainers",
         accessor: v => array2String(v, ["maintainers"]),
         show: false
       },
       {
-        id: "network",
-        Header: "Network",
-        accessor: v => getNestedObject(v, ["network", "tech"]),
-        show: false
-      },
-      {
-        id: "peripherals",
-        Header: "Peripherals",
-        accessor: v => array2String(v, ["peripherals"]),
-        show: false
-      },
-      {
-        Header: "Screen ppi",
-        accessor: "screen_ppi",
-        show: false
-      },
-      {
-        Header: "Screen technology",
-        accessor: "screen_tech",
-        show: false
-      },
-      {
-        Header: "SD Card",
-        accessor: "sdcard",
-        show: false
-      },
-      {
-        Header: "System on a chip",
-        accessor: "soc",
-        show: false
-      },
-      {
-        Header: "Device type",
-        accessor: "type",
+        Header: "Current version",
+        accessor: "current_branch",
         show: false
       },
       {
@@ -250,9 +239,20 @@ class DevicesTable extends Component {
         show: false
       },
       {
-        id: "models",
-        Header: "Models",
-        accessor: v => array2String(v, ["models"]),
+        id: "release",
+        Header: "Release date",
+        accessor: v => getNestedObject(v, ["release"]),
+        show: true
+      },
+      {
+        id: "peripherals",
+        Header: "Peripherals",
+        accessor: v => array2String(v, ["peripherals"]),
+        show: false
+      },
+      {
+        Header: "Device type",
+        accessor: "type",
         show: false
       }
     ]
