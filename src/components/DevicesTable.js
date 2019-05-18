@@ -54,7 +54,11 @@ const getNestedObject = (wholeObj, fullPath) => {
       .join("\u000A");
   }
 
-  return nestedPath.reduce((a, v) => a[v], nestedObj);
+  if (typeof nestedObj === "object") {
+    return nestedObj ? nestedPath.reduce((a, v) => a[v], nestedObj) : "";
+  }
+
+  return nestedObj;
 };
 
 const array2String = (wholeObj, fullPath) =>
@@ -176,8 +180,9 @@ class DevicesTable extends Component {
         show: true
       },
       {
+        id: "architecture",
         Header: "Architecture",
-        accessor: "architecture",
+        accessor: v => getNestedObject(v, ["architecture", "cpu"]),
         show: false
       },
       {
@@ -202,8 +207,9 @@ class DevicesTable extends Component {
         show: false
       },
       {
+        id: "network",
         Header: "Network",
-        accessor: "network",
+        accessor: v => getNestedObject(v, ["network", "tech"]),
         show: false
       },
       {
@@ -358,7 +364,7 @@ class DevicesTable extends Component {
           ]}
           defaultFilterMethod={(filter, row) => {
             const id = filter.pivotId || filter.id;
-            return row[id] !== undefined
+            return row[id] !== null
               ? String(row[id])
                   .toLowerCase()
                   .includes(filter.value.toLowerCase())
