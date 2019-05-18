@@ -17,7 +17,8 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-  FormHelperText
+  FormHelperText,
+  Link
 } from "@material-ui/core";
 import ViewColumnIcon from "@material-ui/icons/ViewColumn";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
@@ -268,6 +269,20 @@ class DevicesTable extends Component {
       {
         Header: "Device type",
         accessor: "type",
+        show: false
+      },
+      {
+        id: "wiki",
+        Header: "Wiki",
+        accessor: v => (
+          <Link
+            href={`https://wiki.lineageos.org/devices/${v.codename}`}
+            target="_blank"
+            rel="noopener"
+          >
+            Open wiki
+          </Link>
+        ),
         show: false
       }
     ]
