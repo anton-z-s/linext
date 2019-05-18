@@ -61,6 +61,20 @@ const getNestedObject = (wholeObj, fullPath) => {
   return nestedObj;
 };
 
+/**
+ * Like getNestedObject but returns only newest date, if there are many. Useful for sorting
+ */
+const getNewestNestedDate = (wholeObj, fullPath) => {
+  const nestedObj = wholeObj[fullPath[0]];
+
+  if (Array.isArray(nestedObj)) {
+    const dates = nestedObj.map(obj => Object.values(obj)[0]);
+    return dates.reduce((a, b) => (a > b ? a : b));
+  }
+
+  return nestedObj;
+};
+
 const array2String = (wholeObj, fullPath) =>
   Array.isArray(wholeObj[fullPath]) ? wholeObj[fullPath].join(", ") : "";
 
@@ -241,7 +255,7 @@ class DevicesTable extends Component {
       {
         id: "release",
         Header: "Release date",
-        accessor: v => getNestedObject(v, ["release"]),
+        accessor: v => getNewestNestedDate(v, ["release"]),
         show: true
       },
       {
