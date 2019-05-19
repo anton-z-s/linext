@@ -1,4 +1,5 @@
 import React from "react";
+import { HashRouter, Route, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import {
   AppBar,
@@ -36,7 +37,7 @@ function App(props) {
   const { classes, apolloClient } = props;
 
   return (
-    <React.Fragment>
+    <HashRouter basename="/">
       <CssBaseline />
       <AppBar position="static" className={classes.appBar}>
         <Toolbar>
@@ -75,13 +76,14 @@ function App(props) {
           devices, presented in a convenient way.
         </Typography>
         <Typography variant="subtitle1" gutterBottom>
-          You can sort (hold Shift to multi-sort), filter devices, show/hide columns (
+          You can sort (hold Shift to multi-sort), filter devices, show/hide
+          columns (
           <ViewColumn className={classes.columnIconInText} />
           ). All the info is straight out of official wiki, always up-to-date.
         </Typography>
         <DevicesTable apolloClient={apolloClient} />
       </main>
-    </React.Fragment>
+    </HashRouter>
   );
 }
 
