@@ -20,7 +20,7 @@ import {
   FormHelperText,
   Link
 } from "@material-ui/core";
-import ViewColumnIcon from "@material-ui/icons/ViewColumn";
+import { ViewColumn } from "@material-ui/icons";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
 import ReactTable, { ReactTableDefaults } from "react-table";
 import GET_DEVICES from "../queries/devicesWiki";
@@ -342,7 +342,7 @@ class DevicesTable extends Component {
       <Paper className={classes.root}>
         <Tooltip title="Toggle columns">
           <IconButton onClick={this.handleColumnToggleClick}>
-            <ViewColumnIcon />
+            <ViewColumn />
           </IconButton>
         </Tooltip>
         <Popover

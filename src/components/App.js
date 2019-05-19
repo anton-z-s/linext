@@ -7,15 +7,17 @@ import {
   CssBaseline,
   withStyles,
   IconButton,
-  SvgIcon
+  SvgIcon,
+  Link
 } from "@material-ui/core";
-import { Smartphone } from "@material-ui/icons";
+import { Smartphone, ViewColumn } from "@material-ui/icons";
 import DevicesTable from "./DevicesTable";
 
 const styles = theme => ({
   appBar: {
     position: "relative",
-    backgroundColor: "#167C80"
+    backgroundColor: "#167C80",
+    marginBottom: theme.spacing.unit * 3
   },
   icon: {
     marginRight: theme.spacing.unit * 2
@@ -23,9 +25,11 @@ const styles = theme => ({
   container: {
     width: "auto",
     marginLeft: theme.spacing.unit * 3,
-    marginRight: theme.spacing.unit * 3
+    marginRight: theme.spacing.unit * 3,
+    marginBottom: theme.spacing.unit * 3
   },
-  appName: { flexGrow: 1 }
+  appName: { flexGrow: 1 },
+  columnIconInText: { verticalAlign: "middle" }
 });
 
 function App(props) {
@@ -58,8 +62,22 @@ function App(props) {
         </Toolbar>
       </AppBar>
       <main className={classes.container}>
-        <Typography variant="h3" gutterBottom>
-          ...
+        <Typography variant="h6" gutterBottom>
+          This is a list of{" "}
+          <Link
+            href="https://www.lineageos.org/"
+            target="_blank"
+            rel="noopener"
+          >
+            {" "}
+            LineageOS
+          </Link>{" "}
+          devices, presented in a convenient way.
+        </Typography>
+        <Typography variant="subtitle1" gutterBottom>
+          You can sort (hold Shift to multi-sort), filter devices, show/hide columns (
+          <ViewColumn className={classes.columnIconInText} />
+          ). All the info is straight out of official wiki, always up-to-date.
         </Typography>
         <DevicesTable apolloClient={apolloClient} />
       </main>
