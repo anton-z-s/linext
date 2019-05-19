@@ -274,6 +274,7 @@ class DevicesTable extends Component {
       {
         id: "wiki",
         Header: "Wiki",
+        filterable: false,
         accessor: v => (
           <Link
             href={`https://wiki.lineageos.org/devices/${v.codename}`}
