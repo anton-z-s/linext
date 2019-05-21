@@ -79,7 +79,8 @@ function App(props) {
           You can sort (hold Shift to multi-sort), filter devices, show/hide
           columns (
           <ViewColumn className={classes.columnIconInText} />
-          ). All the info is straight out of official wiki, always up-to-date.
+          ). All the info is straight out of the official wiki, always
+          up-to-date.
         </Typography>
         <DevicesTable apolloClient={apolloClient} />
       </main>
