@@ -168,9 +168,24 @@ class DevicesTable extends Component {
         show: false
       },
       {
-        id: "battery",
-        Header: "Battery",
+        id: "battery_capacity",
+        Header: "Battery capacity",
         accessor: v => getNestedObject(v, ["battery", "capacity"]),
+        style: { whiteSpace: "pre-wrap" },
+        show: false
+      },
+      {
+        id: "battery_removable",
+        Header: "Battery removable",
+        accessor: v => getNestedObject(v, ["battery", "removable"]),
+        style: { whiteSpace: "pre-wrap" },
+        show: false
+      },
+      {
+        id: "battery_tech",
+        Header: "Battery tech",
+        accessor: v => getNestedObject(v, ["battery", "tech"]),
+        style: { whiteSpace: "pre-wrap" },
         show: false
       },
       {
