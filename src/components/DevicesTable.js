@@ -400,6 +400,7 @@ class DevicesTable extends Component {
           noDataText={loading ? "" : "No devices found..."}
           loading={loading}
           showPagination={false}
+          defaultPageSize={300}
           minRows={5}
           defaultSorted={[
             {
