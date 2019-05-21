@@ -79,6 +79,16 @@ const getNewestNestedDate = (wholeObj, fullPath) => {
 const array2String = (wholeObj, fullPath) =>
   Array.isArray(wholeObj[fullPath]) ? wholeObj[fullPath].join(", ") : "";
 
+const arrayObj2String = (wholeObj, path, key1, key2) => {
+  if (wholeObj != null) {
+    const nestedObj = wholeObj[path];
+    return nestedObj != null
+      ? nestedObj.map(obj => `${obj[key1]}: ${obj[key2]}`).join("\u000A")
+      : "";
+  }
+  return "";
+};
+
 const styles = theme => ({
   root: {
     width: "100%",
@@ -211,8 +221,15 @@ class DevicesTable extends Component {
       },
       {
         id: "network",
-        Header: "Network",
+        Header: "Network tech",
         accessor: v => getNestedObject(v, ["network", "tech"]),
+        show: false
+      },
+      {
+        id: "network_bands",
+        Header: "Network bands",
+        accessor: v => arrayObj2String(v, "network", "tech", "bands"),
+        style: { whiteSpace: "pre-wrap" },
         show: false
       },
       {
@@ -401,11 +418,11 @@ class DevicesTable extends Component {
           ]}
           defaultFilterMethod={(filter, row) => {
             const id = filter.pivotId || filter.id;
-            return row[id] !== null
+            return row[id] != null
               ? String(row[id])
                   .toLowerCase()
                   .includes(filter.value.toLowerCase())
-              : true;
+              : false;
           }}
         />
       </Paper>
