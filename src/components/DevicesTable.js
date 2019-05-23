@@ -405,6 +405,9 @@ class DevicesTable extends Component {
             </FormGroup>
           </FormControl>
         </Popover>
+        <Button href="#">
+          Reset
+        </Button>
         <ReactTable
           data={data}
           columns={columns}
