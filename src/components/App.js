@@ -38,6 +38,10 @@ const theme = createMuiTheme({
   palette: {
     primary: { main: "#167c80" },
     secondary: { main: "#008e9e" }
+  },
+  transitions: {
+    // So we have `transition: none;` everywhere
+    create: () => "none"
   }
 });
 

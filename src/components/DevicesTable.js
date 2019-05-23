@@ -18,7 +18,8 @@ import {
   FormControlLabel,
   Checkbox,
   FormHelperText,
-  Link
+  Link,
+  Button
 } from "@material-ui/core";
 import { ViewColumn } from "@material-ui/icons";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
