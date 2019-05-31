@@ -109,6 +109,19 @@ class DevicesTable extends Component {
     data: [],
     anchorCol: null,
     loading: true,
+    sorted: [
+      {
+        id: "release",
+        desc: true
+      }
+    ],
+    filtered: [
+      {
+        // default filter value
+        id: "maintained",
+        value: "Yes"
+      }
+    ],
     // id must be provided
     columns: [
       {
@@ -364,6 +377,29 @@ class DevicesTable extends Component {
       ); // FAILSAFE_SCHEMA will ensure that strings that look like date won't be converted
   }
 
+  componentDidUpdate() {
+    const { columns, filtered, sorted } = this.state;
+
+    // Convert react-table state to URL format
+    const urlShow = columns
+      .filter(col => col.show)
+      .map(col => col.id)
+      .join("+");
+
+    const urlSort = sorted
+      .map(col => (col.desc ? `${col.id}_desc` : col.id))
+      .join("+");
+
+    const urlFilter = btoa(
+      unescape(encodeURIComponent(JSON.stringify(filtered)))
+    );
+    // JSON.parse(decodeURIComponent(escape(atob(colFilt))))
+
+    console.log(`show=${urlShow}&sort=${urlSort}&filter=${urlFilter}`);
+
+    // TODO parse when no filter or sort
+  }
+
   handleColumnToggleClick = event => {
     this.setState({
       anchorCol: event.currentTarget
@@ -391,7 +427,7 @@ class DevicesTable extends Component {
 
   render() {
     const { classes } = this.props;
-    const { data, anchorCol, columns, loading } = this.state;
+    const { data, anchorCol, columns, loading, sorted, filtered } = this.state;
     const isColumnToggle = Boolean(anchorCol);
 
     return (
@@ -442,20 +478,9 @@ class DevicesTable extends Component {
           showPagination={false}
           pageSize={data.length}
           minRows={5}
-          defaultSorted={[
-            {
-              id: "release",
-              desc: true
-            }
-          ]}
+          sorted={sorted}
           filterable
-          defaultFiltered={[
-            {
-              // default filter value
-              id: "maintained",
-              value: "Yes"
-            }
-          ]}
+          filtered={filtered}
           defaultFilterMethod={(filter, row) => {
             const id = filter.pivotId || filter.id;
             return row[id] != null
@@ -463,6 +488,12 @@ class DevicesTable extends Component {
                   .toLowerCase()
                   .includes(filter.value.toLowerCase())
               : false;
+          }}
+          onSortedChange={newSorted => {
+            this.setState({ sorted: newSorted });
+          }}
+          onFilteredChange={newFiltered => {
+            this.setState({ filtered: newFiltered });
           }}
         />
       </Paper>
