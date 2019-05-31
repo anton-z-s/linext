@@ -395,7 +395,10 @@ class DevicesTable extends Component {
     );
     // JSON.parse(decodeURIComponent(escape(atob(colFilt))))
 
-    console.log(`show=${urlShow}&sort=${urlSort}&filter=${urlFilter}`);
+    const newRoute = `?show=${urlShow}&sort=${urlSort}&filter=${urlFilter}`;
+    if (newRoute !== this.props.history.location.search) {
+      this.props.history.push(newRoute);
+    }
 
     // TODO parse when no filter or sort
   }
