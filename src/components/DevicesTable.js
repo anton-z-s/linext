@@ -109,19 +109,22 @@ class DevicesTable extends Component {
     data: [],
     anchorCol: null,
     loading: true,
-    // Header must be unique
+    // id must be provided
     columns: [
       {
+        id: "codename",
         Header: "Codename",
         accessor: "codename",
         show: false
       },
       {
+        id: "vendor",
         Header: "Vendor",
         accessor: "vendor",
         show: true
       },
       {
+        id: "name",
         Header: "Name",
         accessor: "name",
         show: true
@@ -139,31 +142,37 @@ class DevicesTable extends Component {
         show: true
       },
       {
+        id: "screen",
         Header: "Screen size",
         accessor: "screen",
         show: true
       },
       {
+        id: "screen_res",
         Header: "Screen resolution",
         accessor: "screen_res",
         show: true
       },
       {
+        id: "screen_ppi",
         Header: "Screen ppi",
         accessor: "screen_ppi",
         show: false
       },
       {
+        id: "screen_tech",
         Header: "Screen technology",
         accessor: "screen_tech",
         show: false
       },
       {
+        id: "storage",
         Header: "Storage",
         accessor: "storage",
         show: false
       },
       {
+        id: "sdcard",
         Header: "SD Card",
         accessor: "sdcard",
         show: false
@@ -196,41 +205,49 @@ class DevicesTable extends Component {
         show: false
       },
       {
+        id: "soc",
         Header: "System on a chip",
         accessor: "soc",
         show: false
       },
       {
+        id: "cpu",
         Header: "CPU",
         accessor: "cpu",
         show: false
       },
       {
+        id: "cpu_cores",
         Header: "CPU cores",
         accessor: "cpu_cores",
         show: false
       },
       {
+        id: "cpu_freq",
         Header: "CPU frequency",
         accessor: "cpu_freq",
         show: false
       },
       {
+        id: "gpu",
         Header: "GPU",
         accessor: "gpu",
         show: false
       },
       {
+        id: "bluetooth_spec",
         Header: "Bluetooth",
         accessor: "bluetooth.spec",
         show: false
       },
       {
+        id: "ram",
         Header: "RAM",
         accessor: "ram",
         show: true
       },
       {
+        id: "wifi",
         Header: "Wi-Fi",
         accessor: "wifi",
         show: false
@@ -249,16 +266,19 @@ class DevicesTable extends Component {
         show: false
       },
       {
+        id: "width",
         Header: "Width",
         accessor: "width",
         show: false
       },
       {
+        id: "height",
         Header: "Height",
         accessor: "height",
         show: false
       },
       {
+        id: "depth",
         Header: "Depth",
         accessor: "depth",
         show: false
@@ -277,6 +297,7 @@ class DevicesTable extends Component {
         show: false
       },
       {
+        id: "current_branch",
         Header: "Current version",
         accessor: "current_branch",
         show: false
@@ -300,6 +321,7 @@ class DevicesTable extends Component {
         show: false
       },
       {
+        id: "type",
         Header: "Device type",
         accessor: "type",
         show: false
@@ -354,9 +376,10 @@ class DevicesTable extends Component {
     });
   };
 
+  // Show/hide columns
   handleCToggle = event => {
     const { columns } = this.state;
-    columns[columns.findIndex(x => x.Header === event.target.value)].show =
+    columns[columns.findIndex(x => x.id === event.target.value)].show =
       event.target.checked;
     this.setState({ columns: columns.slice() }); // without making a shallow copy change doesn't get registered, as react doesn't handle nested updates
     // TODO reconsider when react-table v7 is out, avoid nested state https://stackoverflow.com/a/51136076
@@ -400,15 +423,13 @@ class DevicesTable extends Component {
                   control={<Checkbox onChange={this.handleCToggle} />}
                   checked={element.show}
                   label={element.Header}
-                  value={element.Header}
+                  value={element.id}
                 />
               ))}
             </FormGroup>
           </FormControl>
         </Popover>
-        <Button href="#">
-          Reset
-        </Button>
+        <Button href="#">Reset</Button>
         <ReactTable
           data={data}
           columns={columns}
