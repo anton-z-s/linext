@@ -18,15 +18,19 @@ import {
   FormControlLabel,
   Checkbox,
   FormHelperText,
-  Link,
   Button
 } from "@material-ui/core";
 import { ViewColumn } from "@material-ui/icons";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
 import ReactTable, { ReactTableDefaults } from "react-table";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 import GET_DEVICES from "../queries/devicesWiki";
 
 import "react-table/react-table.css";
+
+// TODO form default URL on first load, so there is no inconsistency between this and initial state
+const DEFAULT_URL =
+  "?columns=vendor|name|cameras|screen|screen_res|ram|release&sorted=release_desc&filtered=W3siaWQiOiJtYWludGFpbmVkIiwidmFsdWUiOiJZZXMifV0=";
 
 /**
  * Get object's value by key/array of keys
@@ -390,8 +394,8 @@ class DevicesTable extends Component {
   };
 
   componentDidMount() {
-    const { columns } = this.state;
-    const { apolloClient, location } = this.props;
+    const { columns, sorted, filtered, loading } = this.state;
+    const { apolloClient, location, history } = this.props;
     apolloClient
       .query({
         query: GET_DEVICES
@@ -406,32 +410,51 @@ class DevicesTable extends Component {
           () => {
             const stateFromURL = getStateFromURL(columns, location.search);
             this.setState({ loading: false, ...stateFromURL });
+            // console.log("load false");
           }
         )
       ); // FAILSAFE_SCHEMA will ensure that strings that look like date won't be converted
+
+    history.listen(locationHist => {
+      const stateFromURL = getStateFromURL(columns, locationHist.search);
+      this.setState({ ...stateFromURL });
+    });
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     const { columns, sorted, filtered, loading } = this.state;
     const { location, history } = this.props;
 
-    // Convert react-table state to URL format
-    const urlShow = columns
-      .filter(col => col.show)
-      .map(col => col.id)
-      .join("|");
+    if (!loading) {
+      // if state changed due to user actions
+      if (
+        columns !== prevState.columns ||
+        sorted !== prevState.sorted ||
+        filtered !== prevState.filtered
+      ) {
+        // Convert react-table state to URL format
+        const urlShow = columns
+          .filter(col => col.show)
+          .map(col => col.id)
+          .join("|");
 
-    const urlSort = sorted
-      .map(col => (col.desc ? `${col.id}_desc` : col.id))
-      .join("|");
+        const urlSort = sorted
+          .map(col => (col.desc ? `${col.id}_desc` : col.id))
+          .join("|");
 
-    const urlFilter = btoa(
-      unescape(encodeURIComponent(JSON.stringify(filtered)))
-    );
+        const urlFilter = btoa(
+          unescape(encodeURIComponent(JSON.stringify(filtered)))
+        );
 
-    const newRoute = `?columns=${urlShow}&sorted=${urlSort}&filtered=${urlFilter}`;
-    if (!loading && newRoute !== location.search) {
-      history.push(newRoute);
+        const newQuery = `?columns=${urlShow}&sorted=${urlSort}&filtered=${urlFilter}`;
+        if (newQuery !== location.search) {
+          history.push({
+            pathname: "/",
+            search: newQuery,
+            state: { fired_by_table: true }
+          });
+        }
+      }
     }
   }
 
@@ -500,7 +523,9 @@ class DevicesTable extends Component {
             </FormGroup>
           </FormControl>
         </Popover>
-        <Button href="#">Reset</Button>
+        <Button component={Link} to={`/${DEFAULT_URL}`}>
+          Reset
+        </Button>
         <ReactTable
           data={data}
           columns={columns}
