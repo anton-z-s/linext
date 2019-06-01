@@ -24,7 +24,7 @@ import {
 import { ViewColumn } from "@material-ui/icons";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
 import ReactTable, { ReactTableDefaults } from "react-table";
-import { Link } from "react-router-dom/cjs/react-router-dom";
+import { Link } from "react-router-dom";
 import GET_DEVICES from "../queries/devicesWiki";
 
 import "react-table/react-table.css";
