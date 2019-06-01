@@ -53,7 +53,7 @@ function App(props) {
       <CssBaseline />
       <Route
         path="/"
-        render={({ history }) => (
+        render={({ location, history }) => (
           <MuiThemeProvider theme={theme}>
             <AppBar position="static" className={classes.appBar}>
               <Toolbar>
@@ -98,7 +98,7 @@ function App(props) {
                 ). All the info is straight out of the official wiki, always
                 up-to-date.
               </Typography>
-              <DevicesTable apolloClient={apolloClient} history={history} />
+              <DevicesTable apolloClient={apolloClient} location={location} history={history} />
             </main>
           </MuiThemeProvider>
         )}

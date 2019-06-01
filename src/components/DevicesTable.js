@@ -90,6 +90,38 @@ const arrayObj2String = (wholeObj, path, key1, key2) => {
   return "";
 };
 
+const getStateFromURL = (oldColumns, find) => {
+  const res = {};
+  const query = new URLSearchParams(find);
+
+  if (query.get("columns")) {
+    const newVisibleColumns = query.get("columns").split("|");
+    res.columns = oldColumns.map(col => {
+      return { ...col, show: newVisibleColumns.includes(col.id) };
+    });
+  }
+
+  if (query.get("sorted")) {
+    res.sorted = query
+      .get("sorted")
+      .split("|")
+      .map(sort => {
+        return {
+          id: sort.endsWith("_desc") ? sort.slice(0, -5) : sort,
+          desc: sort.endsWith("_desc")
+        };
+      });
+  }
+
+  if (query.get("filtered")) {
+    res.filtered = JSON.parse(
+      decodeURIComponent(escape(atob(query.get("filtered"))))
+    );
+  }
+
+  return res;
+};
+
 const styles = theme => ({
   root: {
     width: "100%",
@@ -358,7 +390,8 @@ class DevicesTable extends Component {
   };
 
   componentDidMount() {
-    const { apolloClient } = this.props;
+    const { columns } = this.state;
+    const { apolloClient, location } = this.props;
     apolloClient
       .query({
         query: GET_DEVICES
@@ -371,36 +404,35 @@ class DevicesTable extends Component {
             )
           },
           () => {
-            this.setState({ loading: false });
+            const stateFromURL = getStateFromURL(columns, location.search);
+            this.setState({ loading: false, ...stateFromURL });
           }
         )
       ); // FAILSAFE_SCHEMA will ensure that strings that look like date won't be converted
   }
 
   componentDidUpdate() {
-    const { columns, filtered, sorted } = this.state;
+    const { columns, sorted, filtered, loading } = this.state;
+    const { location, history } = this.props;
 
     // Convert react-table state to URL format
     const urlShow = columns
       .filter(col => col.show)
       .map(col => col.id)
-      .join("+");
+      .join("|");
 
     const urlSort = sorted
       .map(col => (col.desc ? `${col.id}_desc` : col.id))
-      .join("+");
+      .join("|");
 
     const urlFilter = btoa(
       unescape(encodeURIComponent(JSON.stringify(filtered)))
     );
-    // JSON.parse(decodeURIComponent(escape(atob(colFilt))))
 
-    const newRoute = `?show=${urlShow}&sort=${urlSort}&filter=${urlFilter}`;
-    if (newRoute !== this.props.history.location.search) {
-      this.props.history.push(newRoute);
+    const newRoute = `?columns=${urlShow}&sorted=${urlSort}&filtered=${urlFilter}`;
+    if (!loading && newRoute !== location.search) {
+      history.push(newRoute);
     }
-
-    // TODO parse when no filter or sort
   }
 
   handleColumnToggleClick = event => {
@@ -506,7 +538,9 @@ class DevicesTable extends Component {
 
 DevicesTable.propTypes = {
   classes: PropTypes.object.isRequired,
-  apolloClient: PropTypes.object.isRequired
+  apolloClient: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(DevicesTable);
