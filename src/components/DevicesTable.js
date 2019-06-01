@@ -18,7 +18,8 @@ import {
   FormControlLabel,
   Checkbox,
   FormHelperText,
-  Button
+  Button,
+  Link as MUILink
 } from "@material-ui/core";
 import { ViewColumn } from "@material-ui/icons";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
@@ -380,13 +381,13 @@ class DevicesTable extends Component {
         Header: "Wiki",
         filterable: false,
         accessor: v => (
-          <Link
+          <MUILink
             href={`https://wiki.lineageos.org/devices/${v.codename}`}
             target="_blank"
             rel="noopener"
           >
             Open wiki
-          </Link>
+          </MUILink>
         ),
         show: false
       }
