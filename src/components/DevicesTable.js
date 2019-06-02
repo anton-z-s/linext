@@ -164,6 +164,18 @@ class DevicesTable extends Component {
         id: "vendor",
         Header: "Vendor",
         accessor: "vendor",
+        Filter: ({ filter, onChange }) => (
+          <select
+            onChange={event => {
+              return onChange(event.target.value);
+            }}
+            style={{ width: "100%" }}
+            value={filter ? filter.value : ""}
+          >
+            <option value="">Show All</option>
+            {this.getFilterOptions("vendor")}
+          </select>
+        ),
         show: true
       },
       {
@@ -449,6 +461,12 @@ class DevicesTable extends Component {
         }
       }
     }
+  }
+
+  getFilterOptions(column) {
+    const { data } = this.state;
+    const uniqueValues = [...new Set(data.map(d => d[column]))].sort();
+    return uniqueValues.map(value => <option value={value}>{value}</option>);
   }
 
   handleColumnToggleClick = event => {
