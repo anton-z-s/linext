@@ -2,22 +2,15 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Paper,
   Tooltip,
   IconButton,
   Popover,
-  Typography,
   FormControl,
   FormLabel,
   FormGroup,
   FormControlLabel,
   Checkbox,
-  FormHelperText,
   Button,
   Link as MUILink
 } from "@material-ui/core";
@@ -395,7 +388,7 @@ class DevicesTable extends Component {
   };
 
   componentDidMount() {
-    const { columns, sorted, filtered, loading } = this.state;
+    const { columns } = this.state;
     const { apolloClient, location, history } = this.props;
     apolloClient
       .query({
@@ -411,7 +404,6 @@ class DevicesTable extends Component {
           () => {
             const stateFromURL = getStateFromURL(columns, location.search);
             this.setState({ loading: false, ...stateFromURL });
-            // console.log("load false");
           }
         )
       ); // FAILSAFE_SCHEMA will ensure that strings that look like date won't be converted
