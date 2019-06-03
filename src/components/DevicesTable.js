@@ -12,7 +12,11 @@ import {
   FormControlLabel,
   Checkbox,
   Button,
-  Link as MUILink
+  Link as MUILink,
+  Select,
+  Input,
+  MenuItem,
+  ListItemText
 } from "@material-ui/core";
 import { ViewColumn } from "@material-ui/icons";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
@@ -135,6 +139,9 @@ const styles = theme => ({
 });
 
 class DevicesTable extends Component {
+  // not in state as there is need to monitor changes
+  filterSelections = { vendor: [] };
+
   state = {
     data: [],
     anchorCol: null,
@@ -164,18 +171,25 @@ class DevicesTable extends Component {
         id: "vendor",
         Header: "Vendor",
         accessor: "vendor",
-        Filter: ({ filter, onChange }) => (
-          <select
-            onChange={event => {
-              return onChange(event.target.value);
-            }}
-            style={{ width: "100%" }}
-            value={filter ? filter.value : ""}
-          >
-            <option value="">Show All</option>
-            {this.getFilterOptions("vendor")}
-          </select>
-        ),
+        Filter: ({ filter, onChange }) => {
+          const filterSelection = this.filterSelections.vendor;
+
+          return (
+            <Select
+              multiple
+              value={filterSelection}
+              onChange={event => {
+                filterSelection.length = 0;
+                filterSelection.push(...event.target.value);
+                return onChange(filterSelection);
+              }}
+              input={<Input id="select-multiple-checkbox" />}
+              renderValue={selected => selected.join(", ")}
+            >
+              {this.getFilterOptions("vendor")}
+            </Select>
+          );
+        },
         show: true
       },
       {
@@ -465,8 +479,14 @@ class DevicesTable extends Component {
 
   getFilterOptions(column) {
     const { data } = this.state;
+    const selectedOptions = this.filterSelections[column];
     const uniqueValues = [...new Set(data.map(d => d[column]))].sort();
-    return uniqueValues.map(value => <option value={value}>{value}</option>);
+    return uniqueValues.map(value => (
+      <MenuItem key={value} value={value}>
+        <Checkbox checked={selectedOptions.includes(value)} />
+        <ListItemText primary={value} />
+      </MenuItem>
+    ));
   }
 
   handleColumnToggleClick = event => {
@@ -523,12 +543,12 @@ class DevicesTable extends Component {
           <FormControl className={classes.formControl}>
             <FormLabel>Select visible columns</FormLabel>
             <FormGroup>
-              {columns.map(element => (
+              {columns.map(column => (
                 <FormControlLabel
                   control={<Checkbox onChange={this.handleCToggle} />}
-                  checked={element.show}
-                  label={element.Header}
-                  value={element.id}
+                  checked={column.show}
+                  label={column.Header}
+                  value={column.id}
                 />
               ))}
             </FormGroup>
@@ -554,6 +574,15 @@ class DevicesTable extends Component {
           filtered={filtered}
           defaultFilterMethod={(filter, row) => {
             const id = filter.pivotId || filter.id;
+            if (Array.isArray(filter.value)) {
+              return row[id] != null
+                ? filter.value.some(val =>
+                    String(row[id])
+                      .toLowerCase()
+                      .includes(val.toLowerCase())
+                  )
+                : false;
+            }
             return row[id] != null
               ? String(row[id])
                   .toLowerCase()
