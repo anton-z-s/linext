@@ -579,6 +579,7 @@ class DevicesTable extends Component {
           defaultFilterMethod={(filter, row) => {
             const id = filter.pivotId || filter.id;
             if (Array.isArray(filter.value)) {
+              if (filter.value.length === 0) return true;
               return row[id] != null
                 ? filter.value.some(val =>
                     String(row[id])
