@@ -139,9 +139,6 @@ const styles = theme => ({
 });
 
 class DevicesTable extends Component {
-  // not in state as there is need to monitor changes
-  filterSelections = { vendor: [] };
-
   state = {
     data: [],
     anchorCol: null,
@@ -157,6 +154,11 @@ class DevicesTable extends Component {
         // default filter value
         id: "maintained",
         value: "Yes"
+      },
+      // next ones are necessary for selectable filters
+      {
+        id: "vendor",
+        value: []
       }
     ],
     // id must be provided
@@ -172,21 +174,24 @@ class DevicesTable extends Component {
         Header: "Vendor",
         accessor: "vendor",
         Filter: ({ filter, onChange }) => {
-          const filterSelection = this.filterSelections.vendor;
+          const selectedOptions = this.state.filtered.find(
+            f => f.id === "vendor"
+          ).value;
 
           return (
             <Select
               multiple
-              value={filterSelection}
+              value={selectedOptions}
               onChange={event => {
-                filterSelection.length = 0;
-                filterSelection.push(...event.target.value);
-                return onChange(filterSelection);
+                selectedOptions.length = 0;
+                // not using setState() as there is need to monitor changes and for performance reasons
+                selectedOptions.push(...event.target.value);
+                return onChange(selectedOptions);
               }}
               input={<Input id="select-multiple-checkbox" />}
               renderValue={selected => selected.join(", ")}
             >
-              {this.getFilterOptions("vendor")}
+              {this.getFilterOptions("vendor", selectedOptions)}
             </Select>
           );
         },
@@ -477,9 +482,8 @@ class DevicesTable extends Component {
     }
   }
 
-  getFilterOptions(column) {
+  getFilterOptions(column, selectedOptions) {
     const { data } = this.state;
-    const selectedOptions = this.filterSelections[column];
     const uniqueValues = [...new Set(data.map(d => d[column]))].sort();
     return uniqueValues.map(value => (
       <MenuItem key={value} value={value}>
