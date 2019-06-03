@@ -28,7 +28,7 @@ import "react-table/react-table.css";
 
 // TODO form default URL on first load, so there is no inconsistency between this and initial state
 const DEFAULT_URL =
-  "?columns=vendor|name|cameras|screen|screen_res|ram|release&sorted=release_desc&filtered=W3siaWQiOiJtYWludGFpbmVkIiwidmFsdWUiOiJZZXMifV0=";
+  "?columns=vendor|name|cameras|screen|screen_res|ram|release&sorted=release_desc&filtered=W3siaWQiOiJtYWludGFpbmVkIiwidmFsdWUiOiJZZXMifSx7ImlkIjoidmVuZG9yIiwidmFsdWUiOltdfV0=";
 
 /**
  * Get object's value by key/array of keys
