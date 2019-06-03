@@ -135,6 +135,18 @@ const styles = theme => ({
   },
   formControl: {
     margin: theme.spacing.unit * 3
+  },
+  formControlLabel: {
+    fontSize: "1rem"
+  },
+  filterSelect: {
+    width: "100%"
+  },
+  filterSelectItemText: {
+    padding: 0
+  },
+  filterSelectItem: {
+    paddingLeft: "12px"
   }
 });
 
@@ -177,9 +189,11 @@ class DevicesTable extends Component {
           const selectedOptions = this.state.filtered.find(
             f => f.id === "vendor"
           ).value;
+          const { classes } = this.props;
 
           return (
             <Select
+              className={classes.filterSelect}
               multiple
               value={selectedOptions}
               onChange={event => {
@@ -484,11 +498,15 @@ class DevicesTable extends Component {
 
   getFilterOptions(column, selectedOptions) {
     const { data } = this.state;
+    const { classes } = this.props;
     const uniqueValues = [...new Set(data.map(d => d[column]))].sort();
     return uniqueValues.map(value => (
-      <MenuItem key={value} value={value}>
+      <MenuItem className={classes.filterSelectItem} key={value} value={value}>
         <Checkbox checked={selectedOptions.includes(value)} />
-        <ListItemText primary={value} />
+        <ListItemText
+          className={classes.filterSelectItemText}
+          primary={value}
+        />
       </MenuItem>
     ));
   }
@@ -549,6 +567,7 @@ class DevicesTable extends Component {
             <FormGroup>
               {columns.map(column => (
                 <FormControlLabel
+                  classes={{ label: classes.formControlLabel }}
                   control={<Checkbox onChange={this.handleCToggle} />}
                   checked={column.show}
                   label={column.Header}
