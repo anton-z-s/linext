@@ -165,7 +165,7 @@ class DevicesTable extends Component {
       {
         // default filter value
         id: "maintained",
-        value: "Yes"
+        value: ["Yes"]
       },
       // next ones are necessary for selectable filters
       {
@@ -189,15 +189,23 @@ class DevicesTable extends Component {
         value: []
       },
       {
-        id: "maintained",
-        value: []
-      },
-      {
         id: "current_branch",
         value: []
       },
       {
         id: "type",
+        value: []
+      },
+      {
+        id: "release",
+        value: []
+      },
+      {
+        id: "battery_tech",
+        value: []
+      },
+      {
+        id: "architecture",
         value: []
       }
     ],
@@ -288,6 +296,11 @@ class DevicesTable extends Component {
         id: "battery_tech",
         Header: "Battery tech",
         accessor: v => getNestedObject(v, ["battery", "tech"]),
+        Filter: this.getFilterSelector("battery_tech", null, [
+          "None",
+          "Li-Po",
+          "Li-Ion"
+        ]),
         style: { whiteSpace: "pre-wrap" },
         show: false
       },
@@ -295,6 +308,9 @@ class DevicesTable extends Component {
         id: "architecture",
         Header: "Architecture",
         accessor: v => getNestedObject(v, ["architecture", "cpu"]),
+        Filter: this.getFilterSelector("architecture", v =>
+          getNestedObject(v, ["architecture", "cpu"])
+        ),
         show: false
       },
       {
@@ -385,6 +401,7 @@ class DevicesTable extends Component {
         Header: "Maintained",
         accessor: v =>
           Array.isArray(v.maintainers) && v.maintainers.length ? "Yes" : "No",
+        Filter: this.getFilterSelector("maintained", null, ["Yes", "No"]),
         show: false
       },
       {
@@ -410,6 +427,10 @@ class DevicesTable extends Component {
         id: "release",
         Header: "Release date",
         accessor: v => getNewestNestedDate(v, ["release"]),
+        Filter: this.getFilterSelector(
+          "release",
+          v => getNewestNestedDate(v, ["release"]).split("-")[0]
+        ),
         show: true
       },
       {
@@ -507,10 +528,13 @@ class DevicesTable extends Component {
     }
   }
 
-  getFilterOptions(column, selectedOptions) {
-    const { data } = this.state;
+  getFilterOptions(
+    colId,
+    selectedOptions,
+    accessor = v => v[colId],
+    uniqueValues = [...new Set(this.state.data.map(accessor))].sort()
+  ) {
     const { classes } = this.props;
-    const uniqueValues = [...new Set(data.map(d => d[column]))].sort();
     return uniqueValues.map(value => (
       <MenuItem className={classes.filterSelectItem} key={value} value={value}>
         <Checkbox checked={selectedOptions.includes(value)} />
@@ -522,7 +546,7 @@ class DevicesTable extends Component {
     ));
   }
 
-  getFilterSelector(colId) {
+  getFilterSelector(colId, accessor, uniqueValues) {
     return ({ onChange }) => {
       const selectedOptions = this.state.filtered.find(f => f.id === colId)
         .value;
@@ -542,7 +566,12 @@ class DevicesTable extends Component {
           input={<Input id="select-multiple-checkbox" />}
           renderValue={selected => selected.join(", ")}
         >
-          {this.getFilterOptions(colId, selectedOptions)}
+          {this.getFilterOptions(
+            colId,
+            selectedOptions,
+            accessor,
+            uniqueValues
+          )}
         </Select>
       );
     };
