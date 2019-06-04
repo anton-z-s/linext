@@ -311,6 +311,14 @@ class DevicesTable extends Component {
         Filter: this.getFilterSelector("architecture", v =>
           getNestedObject(v, ["architecture", "cpu"])
         ),
+        filterMethod: (filter, row) => {
+          const id = filter.pivotId || filter.id;
+          if (filter.value.length === 0) return true;
+          return row[id] != null
+            ? filter.value.some(val => row[id] === val)
+            : false;
+        },
+
         show: false
       },
       {
