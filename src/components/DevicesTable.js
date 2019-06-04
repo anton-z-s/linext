@@ -171,6 +171,34 @@ class DevicesTable extends Component {
       {
         id: "vendor",
         value: []
+      },
+      {
+        id: "cpu",
+        value: []
+      },
+      {
+        id: "soc",
+        value: []
+      },
+      {
+        id: "cpu_cores",
+        value: []
+      },
+      {
+        id: "gpu",
+        value: []
+      },
+      {
+        id: "maintained",
+        value: []
+      },
+      {
+        id: "current_branch",
+        value: []
+      },
+      {
+        id: "type",
+        value: []
       }
     ],
     // id must be provided
@@ -185,30 +213,7 @@ class DevicesTable extends Component {
         id: "vendor",
         Header: "Vendor",
         accessor: "vendor",
-        Filter: ({ filter, onChange }) => {
-          const selectedOptions = this.state.filtered.find(
-            f => f.id === "vendor"
-          ).value;
-          const { classes } = this.props;
-
-          return (
-            <Select
-              className={classes.filterSelect}
-              multiple
-              value={selectedOptions}
-              onChange={event => {
-                selectedOptions.length = 0;
-                // not using setState() as there is need to monitor changes and for performance reasons
-                selectedOptions.push(...event.target.value);
-                return onChange(selectedOptions);
-              }}
-              input={<Input id="select-multiple-checkbox" />}
-              renderValue={selected => selected.join(", ")}
-            >
-              {this.getFilterOptions("vendor", selectedOptions)}
-            </Select>
-          );
-        },
+        Filter: this.getFilterSelector("vendor"),
         show: true
       },
       {
@@ -296,18 +301,21 @@ class DevicesTable extends Component {
         id: "soc",
         Header: "System on a chip",
         accessor: "soc",
+        Filter: this.getFilterSelector("soc"),
         show: false
       },
       {
         id: "cpu",
         Header: "CPU",
         accessor: "cpu",
+        Filter: this.getFilterSelector("cpu"),
         show: false
       },
       {
         id: "cpu_cores",
         Header: "CPU cores",
         accessor: "cpu_cores",
+        Filter: this.getFilterSelector("cpu_cores"),
         show: false
       },
       {
@@ -320,6 +328,7 @@ class DevicesTable extends Component {
         id: "gpu",
         Header: "GPU",
         accessor: "gpu",
+        Filter: this.getFilterSelector("gpu"),
         show: false
       },
       {
@@ -388,6 +397,7 @@ class DevicesTable extends Component {
         id: "current_branch",
         Header: "Current version",
         accessor: "current_branch",
+        Filter: this.getFilterSelector("current_branch"),
         show: false
       },
       {
@@ -412,6 +422,7 @@ class DevicesTable extends Component {
         id: "type",
         Header: "Device type",
         accessor: "type",
+        Filter: this.getFilterSelector("type"),
         show: false
       },
       {
@@ -509,6 +520,32 @@ class DevicesTable extends Component {
         />
       </MenuItem>
     ));
+  }
+
+  getFilterSelector(colId) {
+    return ({ onChange }) => {
+      const selectedOptions = this.state.filtered.find(f => f.id === colId)
+        .value;
+      const { classes } = this.props;
+
+      return (
+        <Select
+          className={classes.filterSelect}
+          multiple
+          value={selectedOptions}
+          onChange={event => {
+            selectedOptions.length = 0;
+            // not using setState() as there is need to monitor changes and for performance reasons
+            selectedOptions.push(...event.target.value);
+            return onChange(selectedOptions);
+          }}
+          input={<Input id="select-multiple-checkbox" />}
+          renderValue={selected => selected.join(", ")}
+        >
+          {this.getFilterOptions(colId, selectedOptions)}
+        </Select>
+      );
+    };
   }
 
   handleColumnToggleClick = event => {
