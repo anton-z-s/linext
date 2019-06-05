@@ -671,6 +671,8 @@ class DevicesTable extends Component {
           filtered={filtered}
           defaultFilterMethod={(filter, row) => {
             const id = filter.pivotId || filter.id;
+
+            // if drop-down filter
             if (Array.isArray(filter.value)) {
               if (filter.value.length === 0) return true;
               return row[id] != null
@@ -681,6 +683,25 @@ class DevicesTable extends Component {
                   )
                 : false;
             }
+
+            // if text filter has comma ("A, B" = "A" or "B")
+            const splitValue = !Array.isArray(filter.value)
+              ? filter.value.split(",")
+              : filter.value;
+            if (Array.isArray(splitValue)) {
+              if (splitValue.length === 0) return true;
+              return row[id] != null
+                ? splitValue.some(val =>
+                    val === ""
+                      ? false
+                      : String(row[id])
+                          .toLowerCase()
+                          .includes(val.trim().toLowerCase())
+                  )
+                : false;
+            }
+
+            // if text filter
             return row[id] != null
               ? String(row[id])
                   .toLowerCase()
