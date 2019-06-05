@@ -162,12 +162,11 @@ class DevicesTable extends Component {
       }
     ],
     filtered: [
+      // next ones are necessary for selectable filters
       {
-        // default filter value
         id: "maintained",
         value: ["Yes"]
       },
-      // next ones are necessary for selectable filters
       {
         id: "vendor",
         value: []
@@ -539,7 +538,7 @@ class DevicesTable extends Component {
   getFilterOptions(
     colId,
     selectedOptions,
-    accessor = v => v[colId],
+    accessor = v => v[colId], // TODO use this.reactTable.resolvedData to illuminate the need for accessor
     uniqueValues = [...new Set(this.state.data.map(accessor))].sort()
   ) {
     const { classes } = this.props;
@@ -655,6 +654,9 @@ class DevicesTable extends Component {
           Reset
         </Button>
         <ReactTable
+          ref={r => {
+            this.reactTable = r;
+          }}
           data={data}
           columns={columns}
           column={{
@@ -712,6 +714,45 @@ class DevicesTable extends Component {
             this.setState({ sorted: newSorted });
           }}
           onFilteredChange={newFiltered => {
+            // get visible selectable filters
+            // for every value of filter check how many rows will be left
+
+            // console.time("someFunction");
+            // TODO calc only when show/hide column
+            // get visible columns selectable filter
+            const visibleSelectableColumns = columns.filter(
+              col => col.show === true && col.Filter
+            );
+
+            visibleSelectableColumns.forEach(col => {
+              const currentFilter = filtered.find(f => f.id === col.id);
+              const otherFilters = filtered.filter(
+                f => f.value.length !== 0 && f.id !== col.id
+              );
+              const oldFilterVal = currentFilter.value.slice();
+              currentFilter.value = [];
+
+              // filter the data with every filter except one that's being tested
+              const filteredData = data.filter(row => {
+                const filterRes = otherFilters.map(f => {
+                  const fCol = columns.find(c => c.id === f.id);
+                  const filteredMethod = fCol.filterMethod
+                    ? fCol.filterMethod
+                    : this.reactTable.props.defaultFilterMethod;
+                  return filteredMethod(f, row);
+                });
+                return filterRes.every(Boolean);
+              });
+
+              console.log(filteredData);
+
+              // TODO test when there is filter for columns with accesor (battery)
+
+              // clear, apply each unique val, count rows, grey these with 0 rows
+
+              currentFilter.value = oldFilterVal;
+            });
+
             this.setState({ filtered: newFiltered });
           }}
         />
