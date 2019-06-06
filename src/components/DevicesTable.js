@@ -471,6 +471,12 @@ class DevicesTable extends Component {
     ]
   };
 
+  // Values for selectable filters
+  uniqueValues = [];
+
+  // Whether value for selectable filters should be gray-out
+  uniqueValuesDisabled = [];
+
   componentDidMount() {
     const { columns } = this.state;
     const { apolloClient, location, history } = this.props;
@@ -542,8 +548,19 @@ class DevicesTable extends Component {
     uniqueValues = [...new Set(this.state.data.map(accessor))].sort()
   ) {
     const { classes } = this.props;
-    return uniqueValues.map(value => (
-      <MenuItem className={classes.filterSelectItem} key={value} value={value}>
+    // TODO calc uniqueValues only once on first data load. this get called on every redraw
+    if (!this.uniqueValues[colId] || this.uniqueValues[colId].length === 0) {
+      this.uniqueValues[colId] = uniqueValues;
+      this.uniqueValuesDisabled[colId] = Array(uniqueValues.length).fill(false);
+    }
+
+    return uniqueValues.map((value, i) => (
+      <MenuItem
+        disabled={this.uniqueValuesDisabled[colId][i]}
+        className={classes.filterSelectItem}
+        key={value}
+        value={value}
+      >
         <Checkbox checked={selectedOptions.includes(value)} />
         <ListItemText
           className={classes.filterSelectItemText}
@@ -717,7 +734,6 @@ class DevicesTable extends Component {
             // get visible selectable filters
             // for every value of filter check how many rows will be left
 
-            // console.time("someFunction");
             // TODO calc only when show/hide column
             // get visible columns selectable filter
             const visibleSelectableColumns = columns.filter(
@@ -725,14 +741,14 @@ class DevicesTable extends Component {
             );
 
             visibleSelectableColumns.forEach(col => {
-              const currentFilter = filtered.find(f => f.id === col.id);
-              const otherFilters = filtered.filter(
+              const currentFilter = newFiltered.find(f => f.id === col.id);
+              const otherFilters = newFiltered.filter(
                 f => f.value.length !== 0 && f.id !== col.id
               );
               const oldFilterVal = currentFilter.value.slice();
               currentFilter.value = [];
 
-              // filter the data with every filter except one that's being tested
+              // filter the data with every filter except the one that's being tested
               const filteredData = data.filter(row => {
                 const filterRes = otherFilters.map(f => {
                   const fCol = columns.find(c => c.id === f.id);
@@ -744,11 +760,19 @@ class DevicesTable extends Component {
                 return filterRes.every(Boolean);
               });
 
-              console.log(filteredData);
+              // test every value of current filter for the amount of rows it will show
+              this.uniqueValues[col.id].forEach((val, i) => {
+                currentFilter.value = val;
+                const count = filteredData.filter(row => {
+                  const filteredMethod = col.filterMethod
+                    ? col.filterMethod
+                    : this.reactTable.props.defaultFilterMethod;
+                  return filteredMethod(currentFilter, row);
+                }).length;
+                this.uniqueValuesDisabled[col.id][i] = count === 0;
+              });
 
               // TODO test when there is filter for columns with accesor (battery)
-
-              // clear, apply each unique val, count rows, grey these with 0 rows
 
               currentFilter.value = oldFilterVal;
             });
