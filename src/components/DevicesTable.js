@@ -320,7 +320,6 @@ class DevicesTable extends Component {
           }
           return row[id] != null ? row[id] === filter.value : false;
         },
-
         show: false
       },
       {
@@ -480,8 +479,9 @@ class DevicesTable extends Component {
   uniqueValuesDisabled = [];
 
   componentDidMount() {
-    const { columns } = this.state;
+    const { columns, filtered } = this.state;
     const { apolloClient, location, history } = this.props;
+    const stateFromURL = getStateFromURL(columns, location.search);
     apolloClient
       .query({
         query: GET_DEVICES
@@ -491,18 +491,18 @@ class DevicesTable extends Component {
           {
             data: result.data.repository.object.entries.map(entry =>
               safeLoad(entry.object.text, { schema: FAILSAFE_SCHEMA })
-            )
+            ),
+            loading: false,
+            ...stateFromURL
           },
           () => {
-            const stateFromURL = getStateFromURL(columns, location.search);
-            this.setState({ loading: false, ...stateFromURL });
+            this.grayoutSelectableFilterOptions(filtered, columns);
+            this.forceUpdate();
           }
         )
-      ); // FAILSAFE_SCHEMA will ensure that strings that look like date won't be converted
-
+      ); // FAILSAFE_SCHEMA will ensure that strings that what looks like date won't be converted
     history.listen(locationHist => {
-      const stateFromURL = getStateFromURL(columns, locationHist.search);
-      this.setState({ ...stateFromURL });
+      this.setState({ ...getStateFromURL(columns, locationHist.search) });
     });
   }
 
@@ -546,11 +546,11 @@ class DevicesTable extends Component {
   getFilterOptions(
     colId,
     selectedOptions,
-    accessor = v => v[colId], // TODO use this.reactTable.resolvedData to illuminate the need for accessor
+    accessor = v => v[colId],
     uniqueValues = [...new Set(this.state.data.map(accessor))].sort()
   ) {
     const { classes } = this.props;
-    // TODO calc uniqueValues only once on first data load. this get called on every redraw
+
     if (!this.uniqueValues[colId] || this.uniqueValues[colId].length === 0) {
       this.uniqueValues[colId] = uniqueValues;
       this.uniqueValuesDisabled[colId] = Array(uniqueValues.length).fill(false);
@@ -626,6 +626,53 @@ class DevicesTable extends Component {
     // related https://github.com/tannerlinsley/react-table/issues/294#issuecomment-311457211
 
     //  TODO consider keeping in state only data that actually change ("show" property)
+  };
+
+  grayoutSelectableFilterOptions = (
+    newFiltered,
+    columns = this.state.columns
+  ) => {
+    // get visible columns selectable filters
+    const visibleSelectableColumns = columns.filter(
+      col => col.show === true && col.Filter
+    );
+
+    visibleSelectableColumns.forEach(col => {
+      const currentFilter = newFiltered.find(f => f.id === col.id);
+      const otherFilters = newFiltered.filter(
+        f => f.value.length !== 0 && f.id !== col.id
+      );
+      const oldFilterVal = currentFilter.value.slice();
+      currentFilter.value = [];
+
+      // filter the data with every filter except the one that's being tested
+      const filteredData = this.reactTable
+        .getResolvedState()
+        .resolvedData.filter(row => {
+          const filterRes = otherFilters.map(f => {
+            const fCol = columns.find(c => c.id === f.id);
+            const filteredMethod = fCol.filterMethod
+              ? fCol.filterMethod
+              : this.reactTable.props.defaultFilterMethod;
+            return filteredMethod(f, row);
+          });
+          return filterRes.every(Boolean);
+        });
+
+      // test every value of current filter for the amount of rows it will show, if 0 then gray-out
+      this.uniqueValues[col.id].forEach((val, i) => {
+        currentFilter.value = val;
+        const count = filteredData.filter(row => {
+          const filteredMethod = col.filterMethod
+            ? col.filterMethod
+            : this.reactTable.props.defaultFilterMethod;
+          return filteredMethod(currentFilter, row);
+        }).length;
+        this.uniqueValuesDisabled[col.id][i] = count === 0;
+      });
+
+      currentFilter.value = oldFilterVal;
+    });
   };
 
   render() {
@@ -721,52 +768,7 @@ class DevicesTable extends Component {
             this.setState({ sorted: newSorted });
           }}
           onFilteredChange={newFiltered => {
-            // get visible selectable filters
-            // for every value of filter check how many rows will be left
-
-            // TODO calc only when show/hide column
-            // get visible columns selectable filter
-            const visibleSelectableColumns = columns.filter(
-              col => col.show === true && col.Filter
-            );
-
-            visibleSelectableColumns.forEach(col => {
-              const currentFilter = newFiltered.find(f => f.id === col.id);
-              const otherFilters = newFiltered.filter(
-                f => f.value.length !== 0 && f.id !== col.id
-              );
-              const oldFilterVal = currentFilter.value.slice();
-              currentFilter.value = [];
-
-              // filter the data with every filter except the one that's being tested
-              const filteredData = this.reactTable
-                .getResolvedState()
-                .resolvedData.filter(row => {
-                  const filterRes = otherFilters.map(f => {
-                    const fCol = columns.find(c => c.id === f.id);
-                    const filteredMethod = fCol.filterMethod
-                      ? fCol.filterMethod
-                      : this.reactTable.props.defaultFilterMethod;
-                    return filteredMethod(f, row);
-                  });
-                  return filterRes.every(Boolean);
-                });
-
-              // test every value of current filter for the amount of rows it will show
-              this.uniqueValues[col.id].forEach((val, i) => {
-                currentFilter.value = val;
-                const count = filteredData.filter(row => {
-                  const filteredMethod = col.filterMethod
-                    ? col.filterMethod
-                    : this.reactTable.props.defaultFilterMethod;
-                  return filteredMethod(currentFilter, row);
-                }).length;
-                this.uniqueValuesDisabled[col.id][i] = count === 0;
-              });
-
-              currentFilter.value = oldFilterVal;
-            });
-
+            this.grayoutSelectableFilterOptions(newFiltered);
             this.setState({ filtered: newFiltered });
           }}
         />
