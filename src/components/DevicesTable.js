@@ -147,6 +147,9 @@ const styles = theme => ({
   },
   filterSelectItem: {
     paddingLeft: "12px"
+  },
+  filterSelectItemReset: {
+    paddingLeft: "48px !important"
   }
 });
 
@@ -497,7 +500,7 @@ class DevicesTable extends Component {
           },
           () => {
             this.grayoutSelectableFilterOptions(filtered, columns);
-            this.forceUpdate();
+            this.forceUpdate(); // TODO bad practice, find better way
           }
         )
       ); // FAILSAFE_SCHEMA will ensure that strings that what looks like date won't be converted
@@ -586,12 +589,24 @@ class DevicesTable extends Component {
           onChange={event => {
             selectedOptions.length = 0;
             // not using setState() as there is need to monitor changes and for performance reasons
-            selectedOptions.push(...event.target.value);
+            if (!event.target.value.includes("Reset"))
+              selectedOptions.push(...event.target.value);
             return onChange(selectedOptions);
           }}
           input={<Input id="select-multiple-checkbox" />}
           renderValue={selected => selected.join(", ")}
         >
+          {" "}
+          <MenuItem
+            className={classes.filterSelectItem}
+            key="Reset"
+            value="Reset"
+          >
+            <ListItemText
+              className={classes.filterSelectItemReset}
+              primary="Reset"
+            />
+          </MenuItem>
           {this.getFilterOptions(
             colId,
             selectedOptions,
