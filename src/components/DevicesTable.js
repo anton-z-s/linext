@@ -313,9 +313,12 @@ class DevicesTable extends Component {
         filterMethod: (filter, row) => {
           const id = filter.pivotId || filter.id;
           if (filter.value.length === 0) return true;
-          return row[id] != null
-            ? filter.value.some(val => row[id] === val)
-            : false;
+          if (Array.isArray(filter.value)) {
+            return row[id] != null
+              ? filter.value.some(val => row[id] === val)
+              : false;
+          }
+          return row[id] != null ? row[id] === filter.value : false;
         },
 
         show: false
@@ -691,9 +694,9 @@ class DevicesTable extends Component {
           defaultFilterMethod={(filter, row) => {
             const id = filter.pivotId || filter.id;
 
+            if (filter.value.length === 0) return true;
             // if drop-down filter
             if (Array.isArray(filter.value)) {
-              if (filter.value.length === 0) return true;
               return row[id] != null
                 ? filter.value.some(val =>
                     String(row[id])
@@ -704,27 +707,15 @@ class DevicesTable extends Component {
             }
 
             // if text filter has comma ("A, B" = "A" or "B")
-            const splitValue = !Array.isArray(filter.value)
-              ? filter.value.split(",")
-              : filter.value;
-            if (Array.isArray(splitValue)) {
-              if (splitValue.length === 0) return true;
-              return row[id] != null
-                ? splitValue.some(val =>
-                    val === ""
-                      ? false
-                      : String(row[id])
-                          .toLowerCase()
-                          .includes(val.trim().toLowerCase())
-                  )
-                : false;
-            }
-
-            // if text filter
+            const splitValue = filter.value.split(",");
             return row[id] != null
-              ? String(row[id])
-                  .toLowerCase()
-                  .includes(filter.value.toLowerCase())
+              ? splitValue.some(val =>
+                  val === ""
+                    ? false
+                    : String(row[id])
+                        .toLowerCase()
+                        .includes(val.trim().toLowerCase())
+                )
               : false;
           }}
           onSortedChange={newSorted => {
