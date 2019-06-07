@@ -409,8 +409,7 @@ class DevicesTable extends Component {
       {
         id: "maintained",
         Header: "Maintained",
-        accessor: v =>
-          Array.isArray(v.maintainers) && v.maintainers.length ? "Yes" : "No",
+        accessor: v => (v.maintainers.length ? "Yes" : "No"),
         Filter: this.getFilterSelector("maintained", null, ["Yes", "No"]),
         show: false
       },
@@ -740,16 +739,18 @@ class DevicesTable extends Component {
               currentFilter.value = [];
 
               // filter the data with every filter except the one that's being tested
-              const filteredData = data.filter(row => {
-                const filterRes = otherFilters.map(f => {
-                  const fCol = columns.find(c => c.id === f.id);
-                  const filteredMethod = fCol.filterMethod
-                    ? fCol.filterMethod
-                    : this.reactTable.props.defaultFilterMethod;
-                  return filteredMethod(f, row);
+              const filteredData = this.reactTable
+                .getResolvedState()
+                .resolvedData.filter(row => {
+                  const filterRes = otherFilters.map(f => {
+                    const fCol = columns.find(c => c.id === f.id);
+                    const filteredMethod = fCol.filterMethod
+                      ? fCol.filterMethod
+                      : this.reactTable.props.defaultFilterMethod;
+                    return filteredMethod(f, row);
+                  });
+                  return filterRes.every(Boolean);
                 });
-                return filterRes.every(Boolean);
-              });
 
               // test every value of current filter for the amount of rows it will show
               this.uniqueValues[col.id].forEach((val, i) => {
@@ -762,8 +763,6 @@ class DevicesTable extends Component {
                 }).length;
                 this.uniqueValuesDisabled[col.id][i] = count === 0;
               });
-
-              // TODO test when there is filter for columns with accesor (battery)
 
               currentFilter.value = oldFilterVal;
             });
