@@ -131,7 +131,8 @@ const styles = theme => ({
     overflowX: "auto"
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
+    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif"
   },
   formControl: {
     margin: theme.spacing.unit * 3
@@ -740,6 +741,7 @@ class DevicesTable extends Component {
           }}
           data={data}
           columns={columns}
+          className={classes.table}
           column={{
             ...ReactTableDefaults.column,
             style: { whiteSpace: "normal" }
