@@ -637,8 +637,10 @@ class DevicesTable extends Component {
     const { columns, filtered } = this.state;
     columns[columns.findIndex(x => x.id === event.target.value)].show =
       event.target.checked;
-    this.grayoutSelectableFilterOptions(filtered, columns);
-    this.setState({ columns: columns.slice() }); // without making a shallow copy change doesn't get registered, as react doesn't handle nested updates
+    this.setState({ columns: columns.slice() }, () => {
+      this.grayoutSelectableFilterOptions(filtered, columns);
+      this.forceUpdate(); // TODO bad practice, find better way
+    }); // without making a shallow copy change doesn't get registered, as react doesn't handle nested updates
     // TODO reconsider when react-table v7 is out, avoid nested state https://stackoverflow.com/a/51136076
     // use immutability-helper
     // related https://github.com/tannerlinsley/react-table/issues/294#issuecomment-311457211
