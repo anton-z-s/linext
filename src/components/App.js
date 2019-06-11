@@ -9,11 +9,15 @@ import {
   withStyles,
   IconButton,
   SvgIcon,
-  Link,
+  Link as MUILink,
   createMuiTheme,
-  MuiThemeProvider
+  MuiThemeProvider,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails
 } from "@material-ui/core";
-import { Smartphone, ViewColumn } from "@material-ui/icons";
+import { Smartphone, ViewColumn, ExpandMore } from "@material-ui/icons";
+import { Link } from "react-router-dom";
 import DevicesTable from "./DevicesTable";
 
 const styles = theme => ({
@@ -31,7 +35,11 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit * 3
   },
   appName: { flexGrow: 1 },
-  columnIconInText: { verticalAlign: "middle" }
+  columnIconInText: { verticalAlign: "middle" },
+  expansionPanelDetails: { flexDirection: "column" },
+  expansionPanelExpanded: {
+    margin: 0
+  }
 });
 
 const theme = createMuiTheme({
@@ -81,24 +89,70 @@ function App(props) {
             <main className={classes.container}>
               <Typography variant="h6" gutterBottom>
                 This is a list of{" "}
-                <Link
+                <MUILink
                   href="https://www.lineageos.org/"
                   target="_blank"
                   rel="noopener"
                 >
                   {" "}
                   LineageOS
-                </Link>{" "}
+                </MUILink>{" "}
                 devices, presented in a convenient way.
               </Typography>
-              <Typography variant="subtitle1" gutterBottom>
-                You can sort (hold Shift to multi-sort), filter devices,
-                show/hide columns (
-                <ViewColumn className={classes.columnIconInText} />
-                ). All the info is straight out of the official wiki, always
-                up-to-date.
-              </Typography>
-              <DevicesTable apolloClient={apolloClient} location={location} history={history} />
+
+              <ExpansionPanel
+                classes={{ expanded: classes.expansionPanelExpanded }}
+              >
+                <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="subtitle1">
+                    How-to use & examples
+                  </Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails
+                  className={classes.expansionPanelDetails}
+                >
+                  <Typography variant="subtitle1" paragraph gutterBottom>
+                    You can sort (hold Shift to multi-sort), filter devices (use
+                    comma for multiple values), show/hide columns (
+                    <ViewColumn className={classes.columnIconInText} />
+                    ). All the info is straight out of the official wiki, always
+                    up-to-date.
+                  </Typography>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Here are some examples of what you can get:
+                  </Typography>
+                  <Typography variant="subtitle1" gutterBottom>
+                    <Link to="/?columns=vendor|name|cameras|screen|screen_res|battery_capacity|ram|current_branch|release&sorted=release_desc&filtered=W3siaWQiOiJtYWludGFpbmVkIiwidmFsdWUiOlsiWWVzIl19LHsiaWQiOiJjcHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJzb2MiLCJ2YWx1ZSI6W119LHsiaWQiOiJjcHVfY29yZXMiLCJ2YWx1ZSI6W119LHsiaWQiOiJncHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJ0eXBlIiwidmFsdWUiOltdfSx7ImlkIjoiYmF0dGVyeV90ZWNoIiwidmFsdWUiOltdfSx7ImlkIjoiYXJjaGl0ZWN0dXJlIiwidmFsdWUiOltdfSx7ImlkIjoidmVuZG9yIiwidmFsdWUiOltdfSx7ImlkIjoicmVsZWFzZSIsInZhbHVlIjpbIjIwMTgiXX0seyJpZCI6ImN1cnJlbnRfYnJhbmNoIiwidmFsdWUiOlsiMTYuMCJdfV0=">
+                      LineageOS devices released in 2018, updated to v16.
+                    </Link>
+                    <br />
+                    <Link to="/?columns=vendor|name|cameras|screen|screen_res|battery_capacity|ram|current_branch|release&sorted=release_desc&filtered=W3siaWQiOiJtYWludGFpbmVkIiwidmFsdWUiOlsiWWVzIl19LHsiaWQiOiJjcHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJzb2MiLCJ2YWx1ZSI6W119LHsiaWQiOiJjcHVfY29yZXMiLCJ2YWx1ZSI6W119LHsiaWQiOiJncHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJ0eXBlIiwidmFsdWUiOltdfSx7ImlkIjoiYmF0dGVyeV90ZWNoIiwidmFsdWUiOltdfSx7ImlkIjoiYXJjaGl0ZWN0dXJlIiwidmFsdWUiOltdfSx7ImlkIjoiY3VycmVudF9icmFuY2giLCJ2YWx1ZSI6W119LHsiaWQiOiJyZWxlYXNlIiwidmFsdWUiOltdfSx7ImlkIjoidmVuZG9yIiwidmFsdWUiOlsiR29vZ2xlIl19XQ==">
+                      LineageOS devices released by Google.
+                    </Link>
+                    <br />
+                    <Link to="/?columns=vendor|name|cameras|screen|screen_res|screen_tech|battery_capacity|ram|release|type&sorted=release_desc&filtered=W3siaWQiOiJ2ZW5kb3IiLCJ2YWx1ZSI6W119LHsiaWQiOiJjcHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJzb2MiLCJ2YWx1ZSI6W119LHsiaWQiOiJjcHVfY29yZXMiLCJ2YWx1ZSI6W119LHsiaWQiOiJncHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJjdXJyZW50X2JyYW5jaCIsInZhbHVlIjpbXX0seyJpZCI6ImJhdHRlcnlfdGVjaCIsInZhbHVlIjpbXX0seyJpZCI6ImFyY2hpdGVjdHVyZSIsInZhbHVlIjpbXX0seyJpZCI6Im1haW50YWluZWQiLCJ2YWx1ZSI6WyJZZXMiXX0seyJpZCI6InJlbGVhc2UiLCJ2YWx1ZSI6W119LHsiaWQiOiJ0eXBlIiwidmFsdWUiOlsidGFibGV0Il19XQ==">
+                      Tablets with LineageOS support.
+                    </Link>
+                    <br />
+                    <Link to="/?columns=vendor|name|cameras|screen|screen_res|screen_tech|ram|release&sorted=release_desc&filtered=W3siaWQiOiJtYWludGFpbmVkIiwidmFsdWUiOlsiWWVzIl19LHsiaWQiOiJ2ZW5kb3IiLCJ2YWx1ZSI6W119LHsiaWQiOiJjcHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJzb2MiLCJ2YWx1ZSI6W119LHsiaWQiOiJjcHVfY29yZXMiLCJ2YWx1ZSI6W119LHsiaWQiOiJncHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJjdXJyZW50X2JyYW5jaCIsInZhbHVlIjpbXX0seyJpZCI6InR5cGUiLCJ2YWx1ZSI6W119LHsiaWQiOiJyZWxlYXNlIiwidmFsdWUiOltdfSx7ImlkIjoiYmF0dGVyeV90ZWNoIiwidmFsdWUiOltdfSx7ImlkIjoiYXJjaGl0ZWN0dXJlIiwidmFsdWUiOltdfSx7ImlkIjoic2NyZWVuX3RlY2giLCJ2YWx1ZSI6ImFtb2xlZCJ9LHsiaWQiOiJyYW0iLCJ2YWx1ZSI6IjYsOCJ9XQ==">
+                      LineageOS devices with 6 or 8 GB of RAM and AMOLED screen.
+                    </Link>
+                    <br />
+                    <Link to="/?columns=vendor|name|cameras|screen|screen_res|soc|cpu|ram|release&sorted=release_desc&filtered=W3siaWQiOiJtYWludGFpbmVkIiwidmFsdWUiOlsiWWVzIl19LHsiaWQiOiJ2ZW5kb3IiLCJ2YWx1ZSI6W119LHsiaWQiOiJjcHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJjcHVfY29yZXMiLCJ2YWx1ZSI6W119LHsiaWQiOiJncHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJjdXJyZW50X2JyYW5jaCIsInZhbHVlIjpbXX0seyJpZCI6InR5cGUiLCJ2YWx1ZSI6W119LHsiaWQiOiJyZWxlYXNlIiwidmFsdWUiOltdfSx7ImlkIjoiYmF0dGVyeV90ZWNoIiwidmFsdWUiOltdfSx7ImlkIjoiYXJjaGl0ZWN0dXJlIiwidmFsdWUiOltdfSx7ImlkIjoic29jIiwidmFsdWUiOlsiUXVhbGNvbW0gU0RNODQ1IFNuYXBkcmFnb24gODQ1IiwiUXVhbGNvbW0gTVNNODk5OCBTbmFwZHJhZ29uIDgzNSJdfV0=">
+                      LineageOS devices with Snapdragon 845 and 835.
+                    </Link>
+                    <br />
+                    <Link to="/?columns=vendor|name|cameras|screen|screen_res|ram|maintained|release&sorted=release_desc&filtered=W3siaWQiOiJ2ZW5kb3IiLCJ2YWx1ZSI6W119LHsiaWQiOiJjcHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJzb2MiLCJ2YWx1ZSI6W119LHsiaWQiOiJjcHVfY29yZXMiLCJ2YWx1ZSI6W119LHsiaWQiOiJncHUiLCJ2YWx1ZSI6W119LHsiaWQiOiJjdXJyZW50X2JyYW5jaCIsInZhbHVlIjpbXX0seyJpZCI6InR5cGUiLCJ2YWx1ZSI6W119LHsiaWQiOiJyZWxlYXNlIiwidmFsdWUiOltdfSx7ImlkIjoiYmF0dGVyeV90ZWNoIiwidmFsdWUiOltdfSx7ImlkIjoiYXJjaGl0ZWN0dXJlIiwidmFsdWUiOltdfSx7ImlkIjoibWFpbnRhaW5lZCIsInZhbHVlIjpbIk5vIl19XQ==">
+                      LineageOS devices that are no longer maintained.
+                    </Link>
+                  </Typography>
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+              <DevicesTable
+                apolloClient={apolloClient}
+                location={location}
+                history={history}
+              />
             </main>
           </MuiThemeProvider>
         )}
