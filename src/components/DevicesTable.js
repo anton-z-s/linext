@@ -633,9 +633,10 @@ class DevicesTable extends Component {
 
   // Show/hide columns
   handleCToggle = event => {
-    const { columns } = this.state;
+    const { columns, filtered } = this.state;
     columns[columns.findIndex(x => x.id === event.target.value)].show =
       event.target.checked;
+    this.grayoutSelectableFilterOptions(filtered, columns);
     this.setState({ columns: columns.slice() }); // without making a shallow copy change doesn't get registered, as react doesn't handle nested updates
     // TODO reconsider when react-table v7 is out, avoid nested state https://stackoverflow.com/a/51136076
     // use immutability-helper
@@ -644,6 +645,7 @@ class DevicesTable extends Component {
     //  TODO consider keeping in state only data that actually change ("show" property)
   };
 
+  // Gray-out values in selectable filters that will show 0 rows
   grayoutSelectableFilterOptions = (
     newFiltered,
     columns = this.state.columns
