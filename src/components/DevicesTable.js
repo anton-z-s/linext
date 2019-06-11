@@ -16,7 +16,8 @@ import {
   Select,
   Input,
   MenuItem,
-  ListItemText
+  ListItemText,
+  TextField
 } from "@material-ui/core";
 import { ViewColumn } from "@material-ui/icons";
 import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
@@ -746,7 +747,13 @@ class DevicesTable extends Component {
           className={classes.table}
           column={{
             ...ReactTableDefaults.column,
-            style: { whiteSpace: "normal" }
+            style: { whiteSpace: "normal" },
+            Filter: ({ filter: newFilter, onChange }) => (
+              <TextField
+                onChange={event => onChange(event.target.value)}
+                value={newFilter ? newFilter.value : ""}
+              />
+            )
           }}
           noDataText={loading ? "" : "No devices found..."}
           loading={loading}
