@@ -707,6 +707,16 @@ class DevicesTable extends Component {
     });
   };
 
+  customFilter = ({ filter, onChange, column }) => {
+    return (
+      <TextField
+        key={column.Header}
+        onChange={event => onChange(event.target.value)}
+        value={filter ? filter.value : ""}
+      />
+    );
+  };
+
   render() {
     const { classes } = this.props;
     const { data, anchorCol, columns, loading, sorted, filtered } = this.state;
@@ -761,12 +771,7 @@ class DevicesTable extends Component {
           column={{
             ...ReactTableDefaults.column,
             style: { whiteSpace: "normal" },
-            Filter: ({ filter: newFilter, onChange }) => (
-              <TextField
-                onChange={event => onChange(event.target.value)}
-                value={newFilter ? newFilter.value : ""}
-              />
-            )
+            Filter: this.customFilter
           }}
           noDataText={loading ? "" : "No devices found..."}
           loading={loading}
