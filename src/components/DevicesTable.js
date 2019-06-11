@@ -152,6 +152,9 @@ const styles = theme => ({
   },
   filterSelectItemReset: {
     paddingLeft: "48px !important"
+  },
+  customFilter: {
+    width: "100%"
   }
 });
 
@@ -708,9 +711,11 @@ class DevicesTable extends Component {
   };
 
   customFilter = ({ filter, onChange, column }) => {
+    const { classes } = this.props;
     return (
       <TextField
         key={column.Header}
+        className={classes.customFilter}
         onChange={event => onChange(event.target.value)}
         value={filter ? filter.value : ""}
       />
