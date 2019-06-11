@@ -506,8 +506,19 @@ class DevicesTable extends Component {
           }
         )
       ); // FAILSAFE_SCHEMA will ensure that strings that what looks like date won't be converted
+
+    // Listen to URL change
     history.listen(locationHist => {
-      this.setState({ ...getStateFromURL(columns, locationHist.search) });
+      this.setState(
+        { ...getStateFromURL(columns, locationHist.search) },
+        () => {
+          this.grayoutSelectableFilterOptions(
+            this.state.filtered,
+            this.state.columns
+          ); // Have to use this.state instead of deconstructed var to get new value
+          this.forceUpdate(); // TODO bad practice, find better way
+        }
+      );
     });
   }
 
