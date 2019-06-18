@@ -805,7 +805,7 @@ class DevicesTable extends Component {
             const splitValue = filter.value.split(",");
             return row[id] != null
               ? splitValue.some(val =>
-                  val === ""
+                  val.trim() === ""
                     ? false
                     : String(row[id])
                         .toLowerCase()
