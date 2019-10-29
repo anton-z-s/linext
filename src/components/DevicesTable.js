@@ -716,7 +716,14 @@ class DevicesTable extends Component {
       <TextField
         key={column.Header}
         className={classes.customFilter}
-        onChange={event => onChange(event.target.value)}
+        onChange={event => {
+          const cursor = event.target.selectionStart;
+          const element = event.target;
+          window.requestAnimationFrame(() => {
+            element.selectionStart = cursor
+            element.selectionEnd = cursor
+          });
+          onChange(event.target.value);}}
         value={filter ? filter.value : ""}
       />
     );
