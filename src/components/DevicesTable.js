@@ -252,7 +252,7 @@ class DevicesTable extends Component {
       {
         id: "screen",
         Header: "Screen size",
-        accessor: "screen",
+        accessor: v => getNestedObject(v, ["screen"]),
         show: true
       },
       {
@@ -720,10 +720,11 @@ class DevicesTable extends Component {
           const cursor = event.target.selectionStart;
           const element = event.target;
           window.requestAnimationFrame(() => {
-            element.selectionStart = cursor
-            element.selectionEnd = cursor
+            element.selectionStart = cursor;
+            element.selectionEnd = cursor;
           });
-          onChange(event.target.value);}}
+          onChange(event.target.value);
+        }}
         value={filter ? filter.value : ""}
       />
     );
