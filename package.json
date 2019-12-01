@@ -15,7 +15,7 @@
     "react-apollo": "^2.5.8",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.0.1",
+    "react-scripts": "3.2.0",
     "react-table": "^6.10.3",
     "typeface-roboto": "0.0.54"
   },
