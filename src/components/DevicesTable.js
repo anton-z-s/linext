@@ -404,7 +404,7 @@ class DevicesTable extends Component {
       {
         id: "height",
         Header: "Height",
-        accessor: "height",
+        accessor: v => getNestedObject(v, ["height"]),
         show: false
       },
       {
