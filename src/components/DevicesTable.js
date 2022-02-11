@@ -2,25 +2,25 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import {
-  Paper,
-  Tooltip,
-  IconButton,
-  Popover,
-  FormControl,
-  FormLabel,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
   Button,
-  Link as MUILink,
-  Select,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  IconButton,
   Input,
-  MenuItem,
+  Link as MUILink,
   ListItemText,
-  TextField
+  MenuItem,
+  Paper,
+  Popover,
+  Select,
+  TextField,
+  Tooltip
 } from "@material-ui/core";
 import { ViewColumn } from "@material-ui/icons";
-import { safeLoad, FAILSAFE_SCHEMA } from "js-yaml";
+import { FAILSAFE_SCHEMA, safeLoad } from "js-yaml";
 import ReactTable, { ReactTableDefaults } from "react-table";
 import { Link } from "react-router-dom";
 import GET_DEVICES from "../queries/devicesWiki";
@@ -252,25 +252,25 @@ class DevicesTable extends Component {
       {
         id: "screen",
         Header: "Screen size",
-        accessor: v => getNestedObject(v, ["screen"]),
+        accessor: v => getNestedObject(v, ["screen", "size"]),
         show: true
       },
       {
         id: "screen_res",
         Header: "Screen resolution",
-        accessor: "screen_res",
+        accessor: v => getNestedObject(v, ["screen", "resolution"]),
         show: true
       },
       {
         id: "screen_ppi",
         Header: "Screen ppi",
-        accessor: "screen_ppi",
+        accessor: v => getNestedObject(v, ["screen", "density"]),
         show: false
       },
       {
         id: "screen_tech",
         Header: "Screen technology",
-        accessor: "screen_tech",
+        accessor: v => getNestedObject(v, ["screen", "technology"]),
         show: false
       },
       {
@@ -498,7 +498,10 @@ class DevicesTable extends Component {
         this.setState(
           {
             data: result.data.repository.object.entries.map(entry =>
-              safeLoad(entry.object.text, { schema: FAILSAFE_SCHEMA })
+              safeLoad(entry.object.text, {
+                schema: FAILSAFE_SCHEMA,
+                json: true
+              })
             ),
             loading: false,
             ...stateFromURL
