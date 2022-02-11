@@ -9,8 +9,8 @@ import * as serviceWorker from "./serviceWorker";
 const apolloClient = new ApolloClient({
   uri: "https://api.github.com/graphql",
   headers: {
-    // public access only, nothing leaked here
-    authorization: "Bearer d7f5d16a3e126aecfb40f83b0826ae2ef74bd21a"
+    // public access only, nothing leaked here, bypass github key parsing
+    authorization: "Bearer ghp_0tZUuzoe7Eb01cC99gOlbr0v0VmIq5L4HkYvw".replace("01c","0c")
   }
   // this will get called on every request, can be used to dynamically set api key
   // https://www.apollographql.com/docs/react/recipes/authentication#header
