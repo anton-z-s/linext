@@ -282,7 +282,7 @@ class DevicesTable extends Component {
       {
         id: "sdcard",
         Header: "SD Card",
-        accessor: "sdcard",
+        accessor: v => getNestedObject(v, ["sdcard", "sizeMax"]),
         show: false
       },
       {
